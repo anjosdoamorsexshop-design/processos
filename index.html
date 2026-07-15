@@ -2167,10 +2167,9 @@ async function gerarProcessoIA() {
   document.getElementById('iaCopyBtn').style.display = 'none';
   document.getElementById('iaRetryBtn').style.display = 'none';
   const systemPrompt = `Você é um especialista em processos operacionais para e-commerce. Sua função é receber a descrição de um processo em linguagem natural e estruturá-lo de forma clara e objetiva para uma Central de Processos interna.\n\nRegras:\n- Se o processo tem bifurcações (se X então Y, senão Z), estruture como QUIZ com perguntas e caminhos.\n- Se é linear, estruture como PASSOS NUMERADOS.\n- Seja direto e prático. Português brasileiro.\n- Use negrito para destacar sistemas (Bling, Monday, SAK), responsáveis e ações críticas.\n- Indique responsáveis no final de cada passo quando mencionado.\n- Se identificar mensagens rápidas (SAK), sugira o atalho e o texto.\n- Formate de forma que a equipe possa seguir sem dúvidas.`;
-  const PROXY = 'https://corsproxy.io/?url=';
   const TARGET = 'https://api.anthropic.com/v1/messages';
   try {
-    const resp = await fetch(PROXY + encodeURIComponent(TARGET), {
+    const resp = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(TARGET), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
