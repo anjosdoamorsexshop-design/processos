@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central de Processos — Anjos do Amor</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --roxo:        #7D387D;
+  --roxo-escuro: #4A1A4A;
+  --rosa:        #F686BD;
+  --magenta:     #E12B8D;
+  --roxo-suave:  #F3E6F3;
+  --cinza-fundo: #F7F4F7;
+  --cinza-borda: #E4D8E4;
+  --txt:         #2C1A2C;
+  --txt-sec:     #6B4E6B;
+  --txt-mudo:    #A882A8;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: #fff;
+  color: var(--txt);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ──────────────────────────────────── */
+.topbar {
+  background: var(--roxo-escuro);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 56px;
+  flex-shrink: 0;
+}
+.topbar-logo {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--roxo), var(--magenta));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.topbar-brand { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--rosa); }
+.topbar-sep   { color: #6B306B; font-size: 16px; }
+.topbar-page  { font-size: 14px; font-weight: 600; color: #fff; }
+.topbar-space { flex: 1; }
+.topbar-date  { font-size: 11px; color: #9A5A9A; }
+
+.login-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.08);
+  border: 1.5px solid rgba(246,134,189,.35);
+  color: #fff; font-size: 12px; font-weight: 600;
+  padding: 7px 14px; border-radius: 20px; cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.login-btn:hover { background: rgba(255,255,255,.15); border-color: var(--rosa); }
+.login-btn svg { width: 14px; height: 14px; }
+
+.admin-badge {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(246,134,189,.15);
+  border: 1.5px solid rgba(246,134,189,.35);
+  color: #fff; font-size: 12px; font-weight: 700;
+  padding: 6px 6px 6px 12px; border-radius: 20px;
+}
+.admin-badge svg { width: 14px; height: 14px; color: var(--rosa); flex-shrink: 0; }
+.admin-badge button {
+  background: none; border: none; color: rgba(255,255,255,.55);
+  cursor: pointer; display: flex; align-items: center;
+  padding: 5px; border-radius: 50%; transition: all .15s;
+}
+.admin-badge button:hover { color: #fff; background: rgba(255,255,255,.1); }
+.admin-badge button svg { width: 13px; height: 13px; color: inherit; }
+
+/* ── LAYOUT ──────────────────────────────────── */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ─────────────────────────────────── */
+.sidebar {
+  width: 228px;
+  min-width: 228px;
+  background: #fff;
+  border-right: 1.5px solid var(--cinza-borda);
+  padding: 18px 0;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.nav-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--txt-mudo); padding: 14px 18px 5px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  font-size: 13px; font-weight: 500;
+  color: var(--txt-sec);
+  transition: all .15s;
+  user-select: none;
+}
+.nav-item:hover { background: var(--cinza-fundo); color: var(--roxo); }
+.nav-item.active {
+  background: var(--roxo-suave);
+  border-left-color: var(--magenta);
+  color: var(--roxo); font-weight: 700;
+}
+.nav-item svg { flex-shrink: 0; width: 16px; height: 16px; }
+
+/* ── CONTENT ─────────────────────────────────── */
+.content {
+  flex: 1; padding: 28px 32px;
+  overflow-y: auto; background: #fff;
+}
+.content-header { margin-bottom: 20px; }
+.cat-tag {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--magenta); margin-bottom: 6px;
+}
+.content-header h1 { font-size: 21px; font-weight: 800; color: var(--txt); margin-bottom: 5px; }
+.content-header p  { font-size: 13px; color: var(--txt-sec); line-height: 1.6; }
+
+/* ── SEARCH ──────────────────────────────────── */
+.search-wrap {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--cinza-fundo);
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 8px; padding: 9px 14px;
+  margin-bottom: 20px;
+}
+.search-wrap svg { color: var(--txt-mudo); flex-shrink: 0; width: 16px; height: 16px; }
+.search-wrap input {
+  background: transparent; border: none; outline: none;
+  color: var(--txt); font-size: 13px;
+  font-family: 'Montserrat', sans-serif; flex: 1;
+}
+.search-wrap input::placeholder { color: var(--txt-mudo); }
+
+/* ── PROCESS CARDS ───────────────────────────── */
+.process-list { display: flex; flex-direction: column; gap: 10px; }
+.process-card {
+  background: #fff;
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 10px; overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.process-card:hover { border-color: #C8A0C8; box-shadow: 0 2px 10px rgba(125,56,125,.08); }
+.process-card.open  { border-color: var(--roxo); box-shadow: 0 2px 14px rgba(125,56,125,.12); }
+
+.process-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px; cursor: pointer; user-select: none;
+}
+.proc-icon {
+  width: 38px; height: 38px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--roxo), var(--magenta));
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.proc-icon svg { width: 18px; height: 18px; color: #fff; }
+.proc-info { flex: 1; min-width: 0; }
+.proc-title { font-size: 14px; font-weight: 700; color: var(--txt); }
+.proc-sub   { font-size: 12px; color: var(--txt-sec); margin-top: 2px; }
+.edit-btn {
+  background: transparent; border: none; color: var(--txt-mudo);
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: all .15s;
+}
+.edit-btn:hover { background: var(--roxo-suave); color: var(--roxo); }
+.edit-btn svg { width: 15px; height: 15px; }
+.chevron {
+  color: var(--txt-mudo); transition: transform .2s; flex-shrink: 0;
+  width: 18px; height: 18px;
+}
+.process-card.open .chevron { transform: rotate(180deg); color: var(--magenta); }
+
+.process-body {
+  display: none;
+  border-top: 1.5px solid var(--cinza-borda);
+  padding: 18px; background: var(--cinza-fundo);
+}
+.process-card.open .process-body { display: block; }
+
+.proc-meta {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--txt-mudo); margin-bottom: 14px;
+}
+.proc-meta svg { width: 13px; height: 13px; }
+
+.steps { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.step  { display: flex; gap: 12px; align-items: flex-start; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--magenta); color: #fff;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-text { font-size: 13px; color: var(--txt); line-height: 1.6; }
+.step-text strong { color: var(--roxo); font-weight: 700; }
+.step-text .bling {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: rgba(225,43,141,.10); color: var(--magenta);
+  border-radius: 5px; font-size: 11px; font-weight: 800;
+  padding: 1px 7px; vertical-align: middle;
+}
+
+.tip-box {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: var(--roxo-suave);
+  border-left: 3px solid var(--roxo);
+  border-radius: 0 8px 8px 0;
+  padding: 11px 14px; margin-top: 16px;
+  font-size: 12px; color: var(--txt-sec); line-height: 1.55;
+}
+.tip-box svg { flex-shrink: 0; margin-top: 1px; width: 15px; height: 15px; color: var(--roxo); }
+
+/* ── ADD BUTTON ──────────────────────────────── */
+.add-btn {
+  margin-top: 14px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 18px;
+  background: transparent;
+  border: 2px dashed var(--cinza-borda);
+  border-radius: 10px;
+  color: var(--roxo);
+  font-size: 13px; font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer; width: 100%;
+  transition: all .15s;
+}
+.add-btn:hover { border-color: var(--roxo); background: var(--roxo-suave); }
+.add-btn svg { width: 16px; height: 16px; }
+
+.auth-hint {
+  display: flex; align-items: center; gap: 6px; justify-content: center;
+  font-size: 11px; color: var(--txt-mudo); margin-top: 9px;
+}
+.auth-hint svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+.empty { text-align: center; color: var(--txt-mudo); font-size: 13px; padding: 40px 0; }
+
+/* ── MODAL IA ─────────────────────────────────── */
+.ia-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(30,5,30,.6);
+  z-index: 1100; align-items: center; justify-content: center; padding: 20px;
+}
+.ia-modal-overlay.open { display: flex; }
+.ia-modal {
+  background: #fff; border: 1.5px solid var(--cinza-borda);
+  border-radius: 14px; width: 100%; max-width: 600px;
+  max-height: 90vh; overflow-y: auto; padding: 28px;
+  animation: modalIn .2s ease-out;
+}
+.ia-modal-hd {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 20px; gap: 12px;
+}
+.ia-modal-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--magenta); margin-bottom: 5px;
+}
+.ia-modal-title { font-size: 17px; font-weight: 800; color: var(--txt); }
+.ia-modal-body { display: flex; flex-direction: column; gap: 16px; }
+.ia-modal-body p { font-size: 13px; color: var(--txt-sec); line-height: 1.6; }
+.ia-textarea {
+  width: 100%; min-height: 140px; resize: vertical;
+  background: var(--cinza-fundo); border: 1.5px solid var(--cinza-borda);
+  border-radius: 8px; color: var(--txt); font-family: 'Montserrat', sans-serif;
+  font-size: 13px; padding: 12px 14px; outline: none; line-height: 1.6;
+  transition: border-color .15s;
+}
+.ia-textarea:focus { border-color: var(--roxo); background: #fff; }
+.ia-textarea::placeholder { color: var(--txt-mudo); }
+.ia-result {
+  background: var(--cinza-fundo); border: 1.5px solid var(--cinza-borda);
+  border-radius: 8px; padding: 14px; display: none;
+  font-size: 13px; color: var(--txt); line-height: 1.6; white-space: pre-wrap;
+  max-height: 320px; overflow-y: auto;
+}
+.ia-result.visible { display: block; }
+.ia-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.ia-spinner {
+  display: none; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--txt-sec); font-weight: 600;
+}
+.ia-spinner.visible { display: flex; }
+.ia-spinner-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--magenta); animation: pulse 1s infinite alternate;
+}
+@keyframes pulse { from { opacity: .3; } to { opacity: 1; } }
+.ia-hint {
+  font-size: 11px; color: var(--txt-mudo); display: flex; align-items: flex-start; gap: 6px;
+  background: var(--roxo-suave); border-radius: 8px; padding: 10px 12px;
+}
+.ia-hint svg { flex-shrink:0; margin-top:1px; width:14px; height:14px; color: var(--roxo); }
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(30,5,30,.55);
+  z-index: 999; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #fff;
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 14px; width: 100%; max-width: 560px;
+  max-height: 90vh; overflow-y: auto; padding: 28px;
+  animation: modalIn .2s ease-out;
+}
+.modal.login-modal { max-width: 380px; }
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.modal-hd {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 22px; gap: 12px;
+}
+.modal-eyebrow {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--magenta); margin-bottom: 5px;
+}
+.modal-title { font-size: 17px; font-weight: 800; color: var(--txt); line-height: 1.25; }
+.modal-close {
+  background: var(--cinza-fundo); border: 1.5px solid var(--cinza-borda);
+  border-radius: 8px; color: var(--txt-mudo);
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: all .15s;
+}
+.modal-close:hover { border-color: var(--magenta); color: var(--magenta); }
+.modal-close svg { width: 16px; height: 16px; }
+
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--txt-sec); margin-bottom: 7px;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.form-label em { color: var(--magenta); font-style: normal; }
+.form-input, .form-textarea {
+  width: 100%;
+  background: var(--cinza-fundo);
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 8px; color: var(--txt);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px; padding: 10px 14px; outline: none;
+  transition: border-color .15s;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--roxo); background: #fff; }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--txt-mudo); }
+.form-textarea { resize: vertical; min-height: 76px; line-height: 1.55; }
+
+.login-error {
+  display: none; align-items: center; gap: 6px;
+  font-size: 12px; color: #C03030; margin-top: 8px; font-weight: 600;
+}
+.login-error svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+.steps-builder { display: flex; flex-direction: column; gap: 8px; }
+.step-row { display: flex; align-items: center; gap: 8px; }
+.step-row-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--magenta); color: #fff;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-row .form-input { margin: 0; }
+.step-del {
+  background: none; border: none; color: var(--txt-mudo);
+  cursor: pointer; padding: 4px; transition: color .15s; flex-shrink: 0;
+}
+.step-del:hover { color: var(--magenta); }
+.step-del svg { width: 15px; height: 15px; }
+.add-step-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: transparent;
+  border: 1.5px dashed var(--cinza-borda);
+  border-radius: 8px; color: var(--roxo);
+  font-size: 12px; font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer; padding: 9px 14px; width: 100%;
+  transition: all .15s; margin-top: 4px;
+}
+.add-step-btn:hover { border-color: var(--roxo); background: var(--roxo-suave); }
+.add-step-btn svg { width: 14px; height: 14px; }
+
+.modal-foot {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 24px; padding-top: 20px;
+  border-top: 1.5px solid var(--cinza-borda);
+}
+.modal-foot-right { display: flex; gap: 10px; margin-left: auto; }
+.btn-cancel {
+  padding: 10px 20px; background: transparent;
+  border: 1.5px solid var(--cinza-borda); border-radius: 8px;
+  color: var(--txt-sec); font-family: 'Montserrat', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s;
+}
+.btn-cancel:hover { border-color: var(--roxo); color: var(--roxo); }
+.btn-save {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--roxo), var(--magenta));
+  border: none; border-radius: 8px; color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+}
+.btn-save:hover { opacity: .88; }
+.btn-save svg { width: 15px; height: 15px; }
+.btn-delete {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 16px; background: transparent;
+  border: 1.5px solid rgba(192,48,48,.35); border-radius: 8px;
+  color: #C03030; font-family: 'Montserrat', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s;
+}
+.btn-delete:hover { background: rgba(192,48,48,.08); border-color: #C03030; }
+.btn-delete svg { width: 14px; height: 14px; }
+
+/* ── TOAST ───────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: #fff;
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 10px; padding: 13px 18px;
+  color: var(--txt); font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  z-index: 9999;
+  box-shadow: 0 4px 24px rgba(125,56,125,.18);
+  animation: toastIn .25s ease-out;
+}
+.toast.ok  { border-color: var(--roxo); }
+.toast.err { border-color: #C03030; }
+.toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+.toast.ok  svg { color: var(--roxo); }
+.toast.err svg { color: #C03030; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 720px) {
+  .sidebar { display: none; }
+  .sidebar.mob-open { display: block; position: fixed; top: 56px; left: 0; bottom: 0; z-index: 900; box-shadow: 4px 0 20px rgba(30,5,30,.18); }
+  .mob-overlay { display: none; position: fixed; inset: 0; top: 56px; background: rgba(30,5,30,.45); z-index: 899; }
+  .mob-overlay.open { display: block; }
+  .content { padding: 20px 16px; }
+  .topbar-page { display: none; }
+}
+.hamburger {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  padding: 8px; border-radius: 8px; color: #fff;
+  transition: background .15s;
+}
+.hamburger:hover { background: rgba(255,255,255,.12); }
+.hamburger svg { width: 22px; height: 22px; display: block; }
+@media (max-width: 720px) { .hamburger { display: flex; align-items: center; justify-content: center; } }
+
+/* ── QUIZ FLOW ───────────────────────────────── */
+.quiz-card {
+  background: #fff;
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 12px;
+}
+.quiz-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 15px 18px;
+}
+.quiz-card-header .proc-icon { flex-shrink:0; }
+.quiz-card-header .proc-info { flex:1; min-width:0; }
+
+.quiz-body {
+  border-top: 1.5px solid var(--cinza-borda);
+  padding: 20px 18px;
+  background: var(--cinza-fundo);
+}
+.quiz-question {
+  font-size: 13px; font-weight: 700; color: var(--txt);
+  margin-bottom: 14px; line-height: 1.5;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  display: flex; align-items: center; gap: 11px;
+  background: #fff; border: 1.5px solid var(--cinza-borda);
+  border-radius: 9px; padding: 12px 16px;
+  cursor: pointer; transition: all .15s;
+  font-size: 13px; font-weight: 600; color: var(--txt-sec);
+  font-family: 'Montserrat', sans-serif;
+  text-align: left;
+}
+.quiz-opt:hover { border-color: var(--roxo); color: var(--roxo); background: var(--roxo-suave); }
+.quiz-opt-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--cinza-borda);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all .15s;
+}
+.quiz-opt:hover .quiz-opt-dot { border-color: var(--roxo); background: var(--roxo); }
+.quiz-opt:hover .quiz-opt-dot::after {
+  content: ''; width: 8px; height: 8px;
+  background: #fff; border-radius: 50%;
+}
+
+.quiz-result {
+  background: #fff; border: 1.5px solid var(--roxo);
+  border-radius: 10px; padding: 18px;
+  margin-top: 6px;
+}
+.quiz-result-title {
+  font-size: 13px; font-weight: 800; color: var(--roxo);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.quiz-result-title svg { width: 16px; height: 16px; color: var(--magenta); }
+.quiz-result ul { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.quiz-result ul li { display: flex; gap: 10px; align-items: flex-start; }
+.quiz-result ul li .step-num { flex-shrink:0; margin-top:1px; }
+.quiz-result ul li .step-text { font-size: 13px; color: var(--txt); line-height: 1.6; }
+
+.quiz-back {
+  background: transparent; border: 1.5px solid var(--cinza-borda);
+  border-radius: 8px; color: var(--txt-sec);
+  font-size: 12px; font-weight: 700; font-family: 'Montserrat', sans-serif;
+  padding: 8px 14px; cursor: pointer; display: flex; align-items: center; gap: 7px;
+  transition: all .15s; margin-top: 14px;
+}
+.quiz-back:hover { border-color: var(--roxo); color: var(--roxo); }
+.quiz-back svg { width: 14px; height: 14px; }
+
+.quiz-warning {
+  display: flex; gap: 9px; align-items: flex-start;
+  background: #FFF7E6; border-left: 3px solid #E8A020;
+  border-radius: 0 8px 8px 0; padding: 11px 14px;
+  font-size: 12px; color: #7A4D00; line-height: 1.55; margin-top: 14px;
+}
+.quiz-warning svg { flex-shrink:0; width:15px; height:15px; color:#E8A020; margin-top:1px; }
+
+.quiz-info-box {
+  display: flex; gap: 9px; align-items: flex-start;
+  background: var(--roxo-suave); border-left: 3px solid var(--roxo);
+  border-radius: 0 8px 8px 0; padding: 11px 14px;
+  font-size: 12px; color: var(--txt-sec); line-height: 1.55; margin-top: 14px;
+}
+.quiz-info-box svg { flex-shrink:0; width:15px; height:15px; color:var(--roxo); margin-top:1px; }
+
+/* ── SAK CARDS ───────────────────────────────── */
+.sak-block { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+.sak-label {
+  font-size: 10px; font-weight: 800; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--txt-mudo); margin-bottom: 2px;
+}
+.sak-card {
+  background: #fff;
+  border: 1.5px solid var(--cinza-borda);
+  border-radius: 9px; overflow: hidden;
+}
+.sak-atalho {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--roxo-suave);
+  border-bottom: 1.5px solid var(--cinza-borda);
+}
+.sak-atalho-tag {
+  font-size: 12px; font-weight: 800; color: var(--roxo);
+  font-family: monospace; letter-spacing: .02em;
+}
+.sak-copy-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--roxo); border: none; border-radius: 6px;
+  color: #fff; font-size: 11px; font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  padding: 4px 10px; cursor: pointer; transition: opacity .15s;
+}
+.sak-copy-btn:hover { opacity: .85; }
+.sak-copy-btn svg { width: 12px; height: 12px; }
+.sak-msg {
+  padding: 10px 12px;
+  font-size: 12px; color: var(--txt-sec); line-height: 1.6;
+  font-style: italic;
+}
+
+/* ── SUB OPTIONS ─────────────────────────────── */
+.sub-options { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.sub-opt-block {
+  background: #fff; border: 1.5px solid var(--cinza-borda);
+  border-radius: 10px; overflow: hidden;
+}
+.sub-opt-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 14px; cursor: pointer; user-select: none;
+  font-size: 13px; font-weight: 700; color: var(--txt-sec);
+  transition: background .15s;
+}
+.sub-opt-header:hover { background: var(--roxo-suave); color: var(--roxo); }
+.sub-opt-header.open { background: var(--roxo-suave); color: var(--roxo); border-bottom: 1.5px solid var(--cinza-borda); }
+.sub-opt-header svg { width: 15px; height: 15px; flex-shrink: 0; transition: transform .2s; }
+.sub-opt-header.open svg { transform: rotate(180deg); }
+.sub-opt-body { display: none; padding: 12px 14px; background: var(--cinza-fundo); }
+.sub-opt-block.open .sub-opt-header { background: var(--roxo-suave); color: var(--roxo); border-bottom: 1.5px solid var(--cinza-borda); }
+.sub-opt-block.open .sub-opt-header svg { transform: rotate(180deg); }
+.sub-opt-block.open .sub-opt-body { display: block; }
+.sub-opt-body ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.sub-opt-body ul li { display: flex; gap: 9px; align-items: flex-start; }
+.sub-opt-body ul li .step-num { flex-shrink:0; margin-top:1px; width:22px; height:22px; font-size:10px; }
+.sub-opt-body ul li .step-text { font-size: 12px; color: var(--txt); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleMobMenu()" aria-label="Menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="topbar-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M5 8h14M5 8a2 2 0 1 0-4 0v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 1 0-4 0M5 8V6a4 4 0 0 1 8 0v2"/></svg>
+  </div>
+  <span class="topbar-brand">Anjos do Amor</span>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-page">Central de Processos</span>
+  <div class="topbar-space"></div>
+  <div id="authArea"></div>
+  <span class="topbar-date" id="topDate"></span>
+</div>
+
+<div class="mob-overlay" id="mobOverlay" onclick="toggleMobMenu()"></div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-label">Pós-venda</div>
+    <div class="nav-item active" data-s="trocas" onclick="go(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+      Garantia arrependimento 7 dias
+    </div>
+    <div class="nav-item" data-s="garantia180" onclick="go(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Garantia defeito 180 dias
+    </div>
+    <div class="nav-label">Estoque</div>
+    <div class="nav-item nav-disabled" data-s="entrada" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>
+      Entrada de mercadoria
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+    <div class="nav-item nav-disabled" data-s="saida" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9m0 0 4 4m-4-4-4 4"/><rect x="3" y="3" width="18" height="4" rx="1"/></svg>
+      Saída e separação
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+    <div class="nav-item nav-disabled" data-s="inventario" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+      Inventário
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+    <div class="nav-item nav-disabled" data-s="insumos" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Contagem de insumos
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+    <div class="nav-item nav-disabled" data-s="avaria" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Avaria e descarte
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+    <div class="nav-label">Logística</div>
+    <div class="nav-item" data-s="reenvio" onclick="go(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Reenvio e devolução
+    </div>
+    <div class="nav-label">Pedidos</div>
+    <div class="nav-item nav-disabled" data-s="cancelamento" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      Cancelamento de pedidos
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+    <div class="nav-item nav-disabled" data-s="etiqueta" onclick="return false" style="opacity:.45;cursor:not-allowed;pointer-events:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Cancelamento de etiqueta
+     <span style="font-size:9px;font-weight:800;background:#E8A020;color:#fff;padding:2px 7px;border-radius:10px;margin-left:auto;letter-spacing:.04em">EM BREVE</span></div>
+  </nav>
+
+  <!-- CONTENT -->
+  <div class="content" id="mainContent"></div>
+</div>
+
+<!-- MODAL: NOVO/EDITAR PROCESSO -->
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClick(event,'modalOverlay',closeModal)">
+  <div class="modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-eyebrow" id="mEyebrow"></div>
+        <div class="modal-title" id="mTitle">Adicionar processo</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="pTitle">Nome do processo <em>*</em></label>
+      <input class="form-input" id="pTitle" type="text" placeholder="Ex: Conferência de NF de importação" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="pSub">Subtítulo / situação</label>
+      <input class="form-input" id="pSub" type="text" placeholder="Ex: Quando chega mercadoria do exterior" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Passos <em>*</em></label>
+      <div class="steps-builder" id="stepsBuilder"></div>
+      <button class="add-step-btn" onclick="addStep()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Adicionar passo
+      </button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="pTip">Dica ou atenção (opcional)</label>
+      <textarea class="form-textarea" id="pTip" placeholder="Ex: Nunca assinar o canhoto antes de conferir todos os itens."></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-delete" id="deleteProcessBtn" style="display:none" onclick="deleteProcess()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Excluir
+      </button>
+      <div class="modal-foot-right">
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn-save" onclick="saveProcess()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Salvar processo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: LOGIN -->
+<div class="modal-overlay" id="loginOverlay" onclick="overlayClick(event,'loginOverlay',closeLoginModal)">
+  <div class="modal login-modal">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-eyebrow">Acesso restrito</div>
+        <div class="modal-title">Entrar para editar</div>
+      </div>
+      <button class="modal-close" onclick="closeLoginModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="loginPass">Senha</label>
+      <input class="form-input" id="loginPass" type="password" placeholder="Digite a senha" autocomplete="current-password">
+      <div class="login-error" id="loginError">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Senha incorreta. Tente novamente.</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="modal-foot-right" style="margin-left:0;">
+        <button class="btn-cancel" onclick="closeLoginModal()">Cancelar</button>
+        <button class="btn-save" onclick="submitLogin()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Entrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CRIAR PROCESSO COM IA -->
+<div class="ia-modal-overlay" id="iaModalOverlay" onclick="if(event.target===this)closeIAModal()">
+  <div class="ia-modal">
+    <div class="ia-modal-hd">
+      <div>
+        <div class="ia-modal-eyebrow">✨ Assistente IA</div>
+        <div class="ia-modal-title">Criar novo processo</div>
+      </div>
+      <button class="modal-close" onclick="closeIAModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ia-modal-body">
+      <div class="ia-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Descreva o processo em linguagem natural — o que acontece, quem faz cada parte, quais sistemas usa, se tem bifurcações (ex: "se X faça Y, senão faça Z"). A IA vai montar o quiz ou passo a passo automaticamente.</span>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Descreva o processo <em>*</em></label>
+        <textarea class="ia-textarea" id="iaInput" placeholder="Ex: Quando o cliente entra em contato pelo WhatsApp reclamando de produto com defeito, a vendedora solicita o vídeo do defeito. Se confirmado, verifica se tem caixa e cabo. Se tiver, combina o motoboy para buscar e abre um card no Monday no quadro Trocas e Devoluções com os dados do pedido..."></textarea>
+      </div>
+      <div class="ia-spinner" id="iaSpinner">
+        <div class="ia-spinner-dot"></div>
+        <div class="ia-spinner-dot" style="animation-delay:.2s"></div>
+        <div class="ia-spinner-dot" style="animation-delay:.4s"></div>
+        <span>A IA está criando o processo...</span>
+      </div>
+      <div class="ia-result" id="iaResult"></div>
+      <div class="ia-actions">
+        <button class="btn-save" id="iaGenBtn" onclick="gerarProcessoIA()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Gerar com IA
+        </button>
+        <button class="btn-cancel" id="iaCopyBtn" style="display:none" onclick="copiarResultadoIA()">Copiar resultado</button>
+        <button class="btn-cancel" id="iaRetryBtn" style="display:none" onclick="document.getElementById('iaResult').classList.remove('visible');document.getElementById('iaCopyBtn').style.display='none';document.getElementById('iaRetryBtn').style.display='none'">Tentar novamente</button>
+        <button class="btn-cancel" onclick="closeIAModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = 'Mgs58900@';
+let isAdmin = localStorage.getItem('anjosAdminLogged') === 'true';
+let pendingAction = null;
+let currentEditIndex = null;
+
+const IC = {
+  clock:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  alert:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  plus:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  chev:   `<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+  check:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><polyline points="20 6 9 17 4 12"/></svg>`,
+  xcircle:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  edit:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+  lock:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,
+  userok: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  icons: {
+    trocas:       `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>`,
+    entrada:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>`,
+    saida:        `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M12 21V9m0 0 4 4m-4-4-4 4"/><rect x="3" y="3" width="18" height="4" rx="1"/></svg>`,
+    inventario:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>`,
+    insumos:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`,
+    avaria:       `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+    cancelamento: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+    etiqueta:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
+    reenvio:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+    posanalise:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+    garantia180:  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`
+  }
+};
+
+const D = {
+  trocas: {
+    tag:"Pós-venda", title:"Trocas e devoluções",
+    desc:"Selecione o tipo de solicitação e o guia indica o caminho certo passo a passo.",
+    quiz: true,
+    flows: [
+      {
+        id: "garantia7dias",
+        title: "Devolução por arrependimento",
+        sub: "Garantia de 7 dias · CDC",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+        startQuestion: "q_perfil",
+        questions: {
+          q_perfil: {
+            text: "Você está acessando como:",
+            options: [
+              { label: "👩‍💼 Vendedora — atendimento ao cliente", next: "q_itens" },
+              { label: "📦 Estoquista — processo interno", next: "q_estoque_nf" }
+            ]
+          },
+          q_itens: {
+            text: "Confirme com o cliente: ele tem TODOS os itens originais? (produto + caixa + cabo + brindes)",
+            sak: [
+              { atalho: "/confirmaritens7dias", mensagem: "Para darmos andamento à sua devolução, preciso confirmar um detalhe: você ainda possui todos os itens que acompanham o produto (caixa, cabo e brindes)? Assim que confirmar, seguimos com o processo. 😊" }
+            ],
+            options: [
+              { label: "✅ Sim, tem todos os itens", next: "q_condicao" },
+              { label: "❌ Não, falta algum item", next: "q_item_faltante" }
+            ]
+          },
+          q_condicao: {
+            text: "Reafirme as condições com o cliente: produto sem marca de uso e embalagem íntegra (não rasgada, aberta ou amassada)?",
+            sak: [
+              { atalho: "/condicoesproduto7dias", mensagem: "Reforçando: caso o produto apresente qualquer marca de uso, a troca não poderá ser realizada, e o custo para retirada do item na loja ficará por conta do cliente. Também é importante que a embalagem esteja íntegra — se estiver danificada, rasgada, aberta ou amassada, a troca também não será efetuada, com o mesmo custo de retirada sendo de responsabilidade do cliente." }
+            ],
+            options: [
+              { label: "✅ Produto OK, embalagem íntegra", next: "q_envio_completo" },
+              { label: "❌ Produto com uso ou embalagem danificada", next: "r_condicao_reprovada" }
+            ]
+          },
+          q_envio_completo: {
+            text: "Qual o método de envio/retirada?",
+            options: [
+              { label: "🛵 Motoboy", next: "r_completo_motoboy" },
+              { label: "📮 Correios / Transportadora", next: "r_completo_correios" },
+              { label: "🏪 Retirada na loja pelo cliente", next: "r_completo_retirada" }
+            ]
+          },
+          q_item_faltante: {
+            text: "Qual item o cliente não tem?",
+            options: [
+              { label: "📦 A caixa do produto", next: "r_sem_caixa" },
+              { label: "🎁 Um brinde ou acessório", next: "q_brinde_tipo" }
+            ]
+          },
+          q_brinde_tipo: {
+            text: "Qual brinde está faltando?",
+            options: [
+              { label: "🎁 Brinde de compras acima de R$180", next: "q_itens_faltando_envio_180" },
+              { label: "🎀 Brinde de todas as compras", next: "q_itens_faltando_envio_geral" }
+            ]
+          },
+          q_itens_faltando_envio_180: {
+            text: "Qual o método de envio/retirada?",
+            sakAntes: [{ atalho: "/brindefaltando180", mensagem: "Para darmos andamento à sua devolução, como o brinde especial não está disponível, precisamos informar que o valor de R$7,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" }],
+            options: [
+              { label: "🛵 Motoboy", next: "r_faltando180_motoboy" },
+              { label: "📮 Correios", next: "r_faltando180_correios" },
+              { label: "🏪 Retirada na loja pelo cliente", next: "r_faltando180_retirada" }
+            ]
+          },
+          q_itens_faltando_envio_geral: {
+            text: "Qual o método de envio/retirada?",
+            sakAntes: [{ atalho: "/brindefaltandogeral", mensagem: "Para darmos andamento à sua devolução, como o brinde não está disponível, precisamos informar que o valor de R$3,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" }],
+            options: [
+              { label: "🛵 Motoboy", next: "r_faltandogeral_motoboy" },
+              { label: "📮 Correios", next: "r_faltandogeral_correios" },
+              { label: "🏪 Retirada na loja pelo cliente", next: "r_faltandogeral_retirada" }
+            ]
+          },
+          q_estoque_nf: {
+            text: "A Nota Fiscal foi emitida há quanto tempo?",
+            options: [
+              { label: "⏱ Menos de 24 horas", next: "r_estoque_menos24" },
+              { label: "🕐 Mais de 24 horas", next: "r_estoque_mais24" }
+            ]
+          }
+        },
+        results: {
+          r_sem_caixa: {
+            title: "Devolução não pode ser aceita — caixa do produto ausente",
+            steps: [
+              "Informar ao cliente que a devolução na Garantia de 7 dias <strong>exige a caixa original do produto</strong>.",
+              "Sem a caixa, infelizmente <strong>não podemos aceitar a devolução</strong> dentro desta garantia.",
+              "Registrar o contato no <strong>Monday.com</strong> com o status da ocorrência."
+            ],
+            tip: null,
+            warning: "Sem a caixa original, a devolução não pode ser processada. Use o atalho SAK abaixo para comunicar ao cliente.",
+            sak: [{ atalho: "/semcaixa7dias", mensagem: "Olá! Infelizmente, para realizarmos a devolução dentro da Garantia de 7 dias, precisamos da caixa original do produto. Pois sem a embalagem não conseguimos voltar o produto para o estoque para que seja vendido para outro cliente. Caso tenha alguma dúvida, estamos à disposição! 😊" }]
+          },
+          r_condicao_reprovada: {
+            title: "Troca não pode ser realizada — condições não atendidas",
+            steps: [
+              "Informar ao cliente (use o SAK abaixo).",
+              "Caso o cliente queira o produto de volta, ele deverá arcar com o <strong>custo de retirada</strong> na loja.",
+              "Registrar o contato no <strong>Monday.com</strong> com o status da ocorrência."
+            ],
+            tip: null,
+            warning: "Nunca autorize a troca em caso de produto com uso ou embalagem danificada, mesmo sob pressão do cliente.",
+            sak: [{ atalho: "/condicaoreprovada7dias", mensagem: "Olá! Após analisarmos a situação, infelizmente não conseguiremos realizar a devolução neste caso. Para que a devolução seja aceita dentro da Garantia de 7 dias, o produto precisa estar sem nenhuma marca de uso e com a embalagem íntegra (não rasgada, aberta ou amassada). Caso queira o produto de volta, o custo de retirada ficará por sua conta. Qualquer dúvida estamos à disposição! 😊" }]
+          },
+          r_completo_motoboy: {
+            title: "Itens completos · Motoboy",
+            steps: [
+              "Combinar com o cliente o melhor horário para buscar o produto (use o SAK abaixo).",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Após o produto chegar na loja, a <strong>estoquista</strong> tem até <strong>48 horas úteis</strong> para analisar. Se o estoque estiver tranquilo, analisar o mais rápido possível.",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista)."
+            ],
+            tip: null,
+            warning: null,
+            sak: [{ atalho: "/agendamotoboy7dias", mensagem: "Confirmado que você possui todos os itens originais e que o produto não foi utilizado. Para retirarmos com o motoboy, poderia me informar um horário disponível hoje ou amanhã? Assim já deixamos tudo agendado para a coleta." }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n🛵 Data que o motoboy buscou: [DATA]"
+          },
+          r_completo_correios: {
+            title: "Itens completos · Correios / Transportadora",
+            steps: [
+              "Avisar ao cliente que vamos gerar um <strong>código reverso</strong> para ele levar o item até os Correios.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Copiar o código e enviar ao cliente (use o SAK abaixo).",
+              "Após o produto chegar na loja, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista)."
+            ],
+            tip: null,
+            warning: null,
+            sak: [{ atalho: "/codigoreversocorreios", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios.\n\n⚠️ Lembre-se de enviar junto: o <strong>produto</strong> com a <strong>embalagem lacrada e sem defeitos</strong>, além de todos os <strong>brindes</strong>. Sem esses itens não conseguimos processar a devolução. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]"
+          },
+          r_completo_retirada: {
+            title: "Itens completos · Retirada na loja",
+            steps: [
+              "O <strong>cliente traz o item até a loja</strong>.",
+              "✅ Se o cliente trouxe pessoalmente <strong>ou outra pessoa trouxe</strong> e o estoque estiver tranquilo, <strong>é possível analisar na hora</strong>. Se veio via Uber, prazo de <strong>até 48h úteis</strong>.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista)."
+            ],
+            tip: null,
+            warning: null,
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n🏪 Data que o cliente trouxe até a loja: [DATA]"
+          },
+          r_faltando180_motoboy: {
+            title: "Brinde R$180 faltando · Motoboy",
+            steps: [
+              "Combinar com o cliente o horário para buscar o produto.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Registrar: produto(s), motivo, data do motoboy.",
+              "Após o produto chegar na loja, a <strong>estoquista</strong> tem até <strong>48 horas úteis</strong> para analisar.",
+              "Processo interno: verificar NF e devolver ao estoque com desconto do brinde (ver aba Estoquista).",
+            ],
+            tip: null,
+            warning: "Lembrar de descontar R$7,00 (brinde acima de R$180) do estorno ou cupom.",
+            sak: [{ atalho: "/brindefaltando180", mensagem: "Para darmos andamento à sua devolução, como o brinde especial não está disponível, precisamos informar que o valor de R$7,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n🛵 Data que o motoboy buscou: [DATA]"
+          },
+          r_faltando180_correios: {
+            title: "Brinde R$180 faltando · Correios",
+            steps: [
+              "Avisar que vamos gerar um código reverso pelo Bling para ele levar até os Correios.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Registrar: produto(s), motivo, data e código reverso.",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Copiar o código e enviar ao cliente com a data limite (use o atalho SAK abaixo).",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista).",
+            ],
+            tip: null,
+            warning: "Lembrar de descontar R$7,00 (brinde acima de R$180) do estorno ou cupom.",
+            sak: [{ atalho: "/brindefaltando180", mensagem: "Para darmos andamento à sua devolução, como o brinde especial não está disponível, precisamos informar que o valor de R$7,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" },
+              { atalho: "/codigoreversocorreios", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios.\n\n⚠️ Lembre-se de enviar junto: o <strong>produto</strong> com a <strong>embalagem lacrada e sem defeitos</strong>, além de todos os <strong>brindes</strong>. Sem esses itens não conseguimos processar a devolução. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]"
+          },
+          r_faltando180_retirada: {
+            title: "Brinde R$180 faltando · Retirada",
+            steps: [
+              "O <strong>cliente traz o item pessoalmente até a loja</strong>.",
+              "✅ Se o cliente trouxe pessoalmente e o estoque estiver tranquilo, <strong>é possível analisar na hora</strong>. Se veio via Uber ou outra pessoa trouxe, prazo de <strong>até 48h úteis</strong>.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Registrar: produto(s), motivo, data que o cliente trouxe.",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista).",
+            ],
+            tip: null,
+            warning: "Lembrar de descontar R$7,00 (brinde acima de R$180) do estorno ou cupom.",
+            sak: [{ atalho: "/brindefaltando180", mensagem: "Para darmos andamento à sua devolução, como o brinde especial não está disponível, precisamos informar que o valor de R$7,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n🏪 Data que o cliente trouxe até a loja: [DATA]"
+          },
+          r_faltandogeral_motoboy: {
+            title: "Brinde geral faltando · Motoboy",
+            steps: [
+              "Combinar com o cliente o horário para buscar o produto.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Registrar: produto(s), motivo, data do motoboy.",
+              "Após o produto chegar na loja, a <strong>estoquista</strong> tem até <strong>48 horas úteis</strong> para analisar.",
+              "Processo interno: verificar NF e devolver ao estoque com desconto do brinde (ver aba Estoquista).",
+            ],
+            tip: null,
+            warning: "Lembrar de descontar R$3,00 (brinde de todas as compras) do estorno ou cupom.",
+            sak: [{ atalho: "/brindefaltandogeral", mensagem: "Para darmos andamento à sua devolução, como o brinde não está disponível, precisamos informar que o valor de R$3,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n🛵 Data que o motoboy buscou: [DATA]"
+          },
+          r_faltandogeral_correios: {
+            title: "Brinde geral faltando · Correios",
+            steps: [
+              "Avisar que vamos gerar um código reverso pelo Bling para ele levar até os Correios.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Registrar: produto(s), motivo, data e código reverso.",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Copiar o código e enviar ao cliente com a data limite (use o atalho SAK abaixo).",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista).",
+            ],
+            tip: null,
+            warning: "Lembrar de descontar R$3,00 (brinde de todas as compras) do estorno ou cupom.",
+            sak: [{ atalho: "/brindefaltandogeral", mensagem: "Para darmos andamento à sua devolução, como o brinde não está disponível, precisamos informar que o valor de R$3,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" },
+              { atalho: "/codigoreversocorreios", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios.\n\n⚠️ Lembre-se de enviar junto: o <strong>produto</strong> com a <strong>embalagem lacrada e sem defeitos</strong>, além de todos os <strong>brindes</strong>. Sem esses itens não conseguimos processar a devolução. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]"
+          },
+          r_faltandogeral_retirada: {
+            title: "Brinde geral faltando · Retirada",
+            steps: [
+              "O <strong>cliente traz o item pessoalmente até a loja</strong>.",
+              "✅ Se o cliente trouxe pessoalmente e o estoque estiver tranquilo, <strong>é possível analisar na hora</strong>. Se veio via Uber ou outra pessoa trouxe, prazo de <strong>até 48h úteis</strong>.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Devolução Arrependimento - Garantia de 7 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Registrar: produto(s), motivo, data que o cliente trouxe.",
+              "Processo interno: verificar NF e devolver ao estoque (ver aba Estoquista)."],
+            tip: null,
+            warning: "Lembrar de descontar R$3,00 (brinde de todas as compras) do estorno ou cupom.",
+            sak: [{ atalho: "/brindefaltandogeral", mensagem: "Para darmos andamento à sua devolução, como o brinde não está disponível, precisamos informar que o valor de R$3,00 será descontado do seu estorno ou cupom. Assim que confirmar, seguimos com o processo! 😊" }],
+            mondayCopy: "📦 Produto(s) devolvidos: [PRODUTO]\n💬 Motivo da devolução: [MOTIVO]\n🏪 Data que o cliente trouxe até a loja: [DATA]"
+          },
+
+          r_estoque_menos24: {
+            title: "Processo interno · NF com menos de 24h",
+            steps: [
+              "Receber o produto e analisar em até <strong>48 horas úteis</strong> — Responsável: <strong>estoquista</strong>.",
+              "Estando tudo certo, entrar no <strong>Bling</strong> → Notas Fiscais → clicar nos 3 pontinhos → <strong>Cancelar NF-e</strong> → escrever motivo do cancelamento → Cancelar — Responsável: <strong>Gerente</strong>.",
+              "Perguntar ao cliente o que ele deseja:"
+            ],
+            tip: null,
+            warning: null,
+          },
+          r_estoque_mais24: {
+            title: "Processo interno · NF com mais de 24h",
+            steps: [
+              "Receber o produto e analisar em até <strong>48 horas úteis</strong> — Responsável: <strong>estoquista</strong>.",
+              "Estando tudo certo, entrar no <strong>Bling</strong> → Notas Fiscais → 3 pontinhos → <strong>Gerar Devolução</strong> → selecionar os itens devolvidos → Continuar → <strong>Emitir NF</strong>. Os itens voltam ao estoque automaticamente — Responsável: <strong>Gerente</strong>.",
+              "Perguntar ao cliente o que ele deseja:"
+            ],
+            tip: null,
+            warning: null
+          }
+        }
+      },
+      {
+        id: "posanalise",
+        title: "Pós-análise — o que o cliente deseja?",
+        sub: "Usar depois que a estoquista analisou o produto",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
+        startQuestion: "q_analise",
+        questions: {
+          q_analise: {
+            text: "Qual foi o resultado da análise do produto?",
+            options: [
+              { label: "✅ Produto aprovado — tudo certo", next: "q_desejo_cliente" },
+              { label: "❌ Produto com marca de uso", next: "r_reprovado_uso" },
+              { label: "❌ Embalagem danificada", next: "r_reprovado_embalagem" }
+            ]
+          },
+          q_desejo_cliente: {
+            text: "O que o cliente deseja?",
+            options: [
+              { label: "💸 Reembolso", next: "r_pos_reembolso" },
+              { label: "🎫 Trocar por outro produto", next: "r_pos_cupom" }
+            ]
+          }
+        },
+        results: {
+          r_reprovado_uso: {
+            title: "Produto reprovado — marca de uso",
+            steps: [
+              "O produto apresentou marca de uso na análise — a devolução <strong>não pode ser processada</strong>.",
+              "Comunicar ao cliente (use o SAK abaixo).",
+              "Registrar o resultado no <strong>Monday.com</strong> com o status da ocorrência.",
+              "O cliente deverá arcar com o custo para buscar o item na loja caso queira de volta."
+            ],
+            tip: null,
+            warning: "Não autorizar a devolução mesmo sob pressão. Registrar tudo no Monday.",
+            sak: [{ atalho: "/reprovadouso7dias", mensagem: "Olá! Após a análise do produto, identificamos que ele apresenta marcas de uso. Conforme nossa política, não é possível realizar a devolução neste caso. Caso queira o produto de volta, será necessário arcar com o custo de retirada na loja. Estamos à disposição para qualquer dúvida! 😊" }]
+          },
+          r_reprovado_embalagem: {
+            title: "Produto reprovado — embalagem danificada",
+            steps: [
+              "A embalagem do produto chegou danificada/rasgada/aberta/amassada — a devolução <strong>não pode ser processada</strong>.",
+              "Comunicar ao cliente (use o SAK abaixo).",
+              "Registrar o resultado no <strong>Monday.com</strong> com o status da ocorrência.",
+              "O cliente deverá arcar com o custo para buscar o item na loja caso queira de volta."
+            ],
+            tip: null,
+            warning: "Não autorizar a devolução mesmo sob pressão. Registrar tudo no Monday.",
+            sak: [{ atalho: "/reprovadoembalagem7dias", mensagem: "Olá! Após a análise, identificamos que a embalagem do produto chegou danificada (rasgada/aberta/amassada). Conforme nossa política, não é possível realizar a devolução neste caso. Caso queira o produto de volta, será necessário arcar com o custo de retirada na loja. Qualquer dúvida, estamos à disposição! 😊" }]
+          },
+          r_pos_reembolso: {
+            title: "Pós-análise · Reembolso",
+            steps: [
+              "Comunicar ao cliente o prazo do reembolso (use o SAK abaixo).",
+              "Adicionar no <strong>Monday.com</strong> → quadro <em>ESTORNOS</em> → card: <code>#[Nº PEDIDO] - [NOME DO CLIENTE]</code>.",
+              "Informar nas atualizações o motivo do estorno. Preencher colunas: Valor a ser Estornado · Nota Fiscal · Método de Pagamento · Pessoa (adicionar Eshely) · Data (sempre data do mesmo dia) — Responsável: <strong>Gabriela / Vendedora</strong>.",
+              "A <strong>Eshely</strong> realiza o estorno e anexa o comprovante no mesmo quadro com status 'Enviar Comprovante', vinculando à vendedora.",
+              "Vendedora envia o comprovante ao cliente.",
+              "Alterar status nos quadros <em>ESTORNOS</em> e <em>TROCAS E DEVOLUÇÃO</em> para <strong>FINALIZADO</strong>."
+            ],
+            tip: null,
+            warning: null,
+            sak: [{ atalho: "/reembolso7dias", mensagem: "Olá! Boa notícia — seu reembolso foi aprovado! 🎉 O valor será processado em até 48 horas úteis. Assim que for concluído, você receberá o comprovante por aqui. Qualquer dúvida é só chamar! 😊" }]
+          },
+          r_pos_cupom: {
+            title: "Pós-análise · Cupom de troca",
+            steps: [
+              "Verificar se o pedido original teve cupom de desconto:",
+              "<strong>Com desconto no pedido:</strong> {VALOR BRUTO DO ITEM} - {% DO CUPOM} - {6% desconto Pix} = VALOR DO CUPOM",
+              "<strong>Sem desconto no pedido:</strong> {VALOR BRUTO DO ITEM} - {6% desconto Pix} = VALOR DO CUPOM",
+              "Criar cupom no <strong>Cashing</strong> → Marketing → Cupons → Novo Cupom:<br>• Código: <code>TROCAPEDIDO{NÚMERO DO PEDIDO}</code><br>• Tipo: Valor Fixo · Valor: calculado acima<br>• Limite: Sempre · Por cliente: Uso único<br>• Agendamento: 30 dias após criação · Aplicar a: Loja toda<br>⚠️ <strong>Desmarcar:</strong> Exibição na loja / Pop-up de cupons — Responsável: <strong>Gabriela / Vendedora</strong>.",
+              "Enviar o cupom ao cliente.",
+              "Alterar status nos quadros <em>ESTORNOS</em> e <em>TROCAS E DEVOLUÇÃO</em> para <strong>FINALIZADO</strong>."
+            ],
+            tip: null,
+            warning: null
+          }
+        }
+      }
+    ],
+  },
+  garantia180: {
+    tag:"Pós-venda", title:"Garantia defeito 180 dias",
+    desc:"Produto com defeito relatado pelo cliente. Siga o quiz para o procedimento correto.",
+    quiz: true,
+    flows: [
+      {
+        id: "g180_atendimento",
+        title: "Atendimento ao cliente — Defeito",
+        sub: "Vendedora · Primeiro contato",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+        startQuestion: "q_perfil180",
+        questions: {
+          q_perfil180: {
+            text: "Você está acessando como:",
+            options: [
+              { label: "👩‍💼 Vendedora — atendimento ao cliente", next: "q_garantia_prazo" },
+              { label: "📦 Estoquista — processo interno", next: "r_estoque_180" }
+            ]
+          },
+          q_garantia_prazo: {
+            text: "1. Verificar se o pedido está dentro da garantia de 6 meses (180 dias) a partir da data de entrega. O pedido está dentro do prazo?",
+            options: [
+              { label: "✅ Sim, está dentro dos 180 dias", next: "q_video" },
+              { label: "❌ Não, passou dos 180 dias", next: "r_fora_garantia" }
+            ]
+          },
+          q_video: {
+            text: "2. Solicitar ao cliente o vídeo do defeito e foto da caixinha/carregador utilizado (use o SAK abaixo). Defeito confirmado pelo vídeo?",
+            sak: [{ atalho: "/solicitarvideo180", mensagem: "Olá! Para darmos andamento à sua solicitação de garantia, precisamos que você nos envie as seguintes informações:\n\n📹 *1. Vídeo do defeito*\nGrave um vídeo mostrando claramente o defeito do produto.\n\n🔌 *2. Foto das especificações da caixinha/carregador*\nEnvie uma foto da parte de trás ou lateral da caixinha ou carregador utilizado, onde aparecem as especificações técnicas (voltagem, amperagem etc.).\n\n📦 *3. Foto do produto*\nEnvie uma foto do produto com o defeito.\n\nAssim que receber tudo, vamos analisar e retornar o mais rápido possível! 😊" }],
+            options: [
+              { label: "✅ Sim, defeito confirmado", next: "q_caixa_cabo" },
+              { label: "❌ Não foi possível confirmar", next: "r_sem_confirmacao" },
+              { label: "⚡ Cliente usou carregador turbo e queimou", next: "q_turbo_caixa_confirm" }
+            ]
+          },
+          q_caixa_cabo: {
+            text: "3. O cliente tem os itens originais do produto (caixa e cabo)?",
+            sak: [{ atalho: "/confirmaritens180", mensagem: "Para realizarmos a troca dentro da garantia, precisamos confirmar: você ainda possui a <strong>caixa original</strong> e o <strong>cabo</strong> do produto? Eles são necessários para seguirmos com o processo. 😊" }],
+            options: [
+              { label: "✅ Sim, tem caixa e cabo", next: "q_envio_com_itens" },
+              { label: "❌ Não tem caixa ou cabo", next: "q_envio_sem_itens" }
+            ]
+          },
+          q_envio_com_itens: {
+            text: "Qual o método de envio/retirada?",
+            options: [
+              { label: "🛵 Motoboy", next: "r_com_motoboy" },
+              { label: "📮 Correios / Transportadora", next: "r_com_correios" },
+              { label: "🏪 Retirada na loja pelo cliente", next: "r_com_retirada" }
+            ]
+          },
+          q_envio_sem_itens: {
+            text: "Qual o método de envio/retirada?",
+            options: [
+              { label: "🛵 Motoboy", next: "r_sem_motoboy" },
+              { label: "📮 Correios / Transportadora", next: "r_sem_correios" },
+              { label: "🏪 Retirada na loja pelo cliente", next: "r_sem_retirada" }
+            ]
+          },
+          q_turbo_caixa_confirm: {
+            text: "Cliente usou carregador turbo — vamos trocar mesmo assim, mas o frete é por conta dele. Envie o SAK abaixo e depois confirme se ele tem os itens originais.",
+            sak: [{ atalho: "/turbotroca180", mensagem: "Olá! O dano causado por carregador turbo não é coberto pela nossa garantia, pois o uso de carregadores acima de 5V=2.0A danifica o produto. Porém, como você é nosso cliente e sempre prezamos pela boa experiência com os nossos produtos, vamos realizar a troca mesmo assim! 🙌\n\nNesse caso, você pode nos enviar o produto com defeito ou trazer até a loja. Como prefere?" }],
+            options: [
+              { label: "✅ Cliente confirmou — tem caixa e cabo", next: "q_turbo_envio_com" },
+              { label: "✅ Cliente confirmou — não tem caixa ou cabo", next: "q_turbo_envio_sem" }
+            ]
+          },
+          q_turbo_caixa: {
+            text: "O cliente tem os itens originais (caixa e cabo)?",
+            options: [
+              { label: "✅ Sim, tem caixa e cabo", next: "q_turbo_envio_com" },
+              { label: "❌ Não tem caixa ou cabo", next: "q_turbo_envio_sem" }
+            ]
+          },
+          q_turbo_envio_com: {
+            text: "Como o cliente vai nos enviar o produto?",
+            options: [
+              { label: "🛵 Motoboy — cliente envia como desejar ou faz Pix e buscamos", next: "r_turbo_com_motoboy" },
+              { label: "📮 Correios — cliente paga o frete e enviamos produto novo", next: "r_turbo_com_correios" }
+            ]
+          },
+          q_turbo_envio_sem: {
+            text: "Como o cliente vai nos enviar o produto?",
+            options: [
+              { label: "🛵 Motoboy — cliente envia como desejar ou faz Pix e buscamos", next: "r_turbo_sem_motoboy" },
+              { label: "📮 Correios — cliente paga o frete e enviamos produto novo", next: "r_turbo_sem_correios" }
+            ]
+          }
+        },
+        results: {
+          r_fora_garantia: {
+            title: "Pedido fora do prazo de garantia",
+            steps: [
+              "O pedido está fora do prazo de <strong>180 dias</strong> de garantia.",
+              "Comunicar ao cliente gentilmente (use o SAK abaixo).",
+              "Registrar o contato no <strong>Monday.com</strong> com o status 'Fora da garantia'."
+            ],
+            tip: "Verificar sempre a data de entrega no pedido antes de informar o cliente.",
+            warning: null,
+            sak: [{ atalho: "/foragarantia180", mensagem: "Olá! Verificamos aqui o seu pedido e, infelizmente, ele está fora do prazo de garantia de 6 meses (180 dias) a partir da data de entrega. Por isso, não conseguimos realizar a troca neste caso. Sentimos muito! Qualquer dúvida estamos à disposição. 😊" }]
+          },
+          r_sem_confirmacao: {
+            title: "Defeito não confirmado pelo vídeo",
+            steps: [
+              "Solicitar novamente um vídeo mais claro do defeito ao cliente.",
+              "Se não for possível confirmar por vídeo, orientar o cliente a trazer ou enviar o produto para análise presencial.",
+              "Registrar o contato no <strong>Monday.com</strong> com o status 'Aguardando confirmação de defeito'."
+            ],
+            tip: "Nunca autorize a troca sem confirmar o defeito pelo vídeo ou análise presencial.",
+            warning: null
+          },
+          r_carregador_turbo: {
+            title: "Cliente usou carregador turbo — frete por conta do cliente",
+            steps: [
+              "Informar ao cliente que o dano por carregador turbo (acima de 5V=2.0A) <strong>não é coberto pela garantia</strong>, mas vamos realizar a troca mesmo assim (use o SAK abaixo).",
+              "O <strong>frete ficará por conta do cliente</strong>.",
+              "Registrar o contato no <strong>Monday.com</strong> com o motivo.",
+              "Verificar se o cliente tem a caixa e o cabo originais e qual o método de envio — seguir o fluxo correspondente."
+            ],
+            tip: "Lembrar de orientar o cliente: usar apenas cabo original e carregador de até 5V=2.0A para não acontecer novamente.",
+            warning: null,
+            sak: [{ atalho: "/turbotroca180", mensagem: "Olá! O dano causado por carregador turbo não é coberto pela nossa garantia, pois o uso de carregadores acima de 5V=2.0A danifica o produto. Porém, como você é nosso cliente e sempre prezamos pela boa experiência com os nossos produtos, vamos realizar a troca mesmo assim! 🙌\n\nNesse caso, você pode nos enviar o produto com defeito ou trazer até a loja. Como prefere?" }]
+          },
+          r_turbo_com_motoboy: {
+            title: "Turbo · Com itens · Motoboy",
+            steps: [
+              "Cliente pode nos enviar como desejar, ou fazer Pix e o motoboy busca lá — combinar com o cliente.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Combinar com o cliente o horário para envio do novo item. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong>."
+            ],
+            tip: "Lembrar o cliente: usar apenas cabo original e carregador de até 5V=2.0A.",
+            warning: null,
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n🛵 Data que o motoboy buscou: [DATA]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_turbo_com_correios: {
+            title: "Turbo · Com itens · Correios",
+            steps: [
+              "Explicar ao cliente que ele paga o valor do frete e geramos a etiqueta. Receber o Pix antes de gerar.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Enviar o código ao cliente (use o SAK abaixo). ⚠️ Lembrar de pedir que envie: <strong>caixa, cabo e produto</strong>.",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Enviar o novo item no frete mais em conta. Avisar ao cliente com rastreio. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong>."
+            ],
+            tip: "Lembrar o cliente: usar apenas cabo original e carregador de até 5V=2.0A.",
+            warning: null,
+            sak: [{ atalho: "/codigoreversocorreios180", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios.\n\n⚠️ Lembre-se de enviar junto: a <strong>caixa original</strong>, o <strong>cabo</strong> e o <strong>produto</strong>. Sem esses itens não conseguimos processar a troca. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_turbo_sem_motoboy: {
+            title: "Turbo · Sem itens · Motoboy",
+            steps: [
+              "O produto novo também será <strong>enviado sem caixa</strong>.",
+              "Cliente pode nos enviar como desejar, ou fazer Pix e o motoboy busca lá — combinar com o cliente.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque → pegar produto novo (sem caixa) → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Combinar com o cliente o horário para envio do novo item. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong>."
+            ],
+            tip: "Lembrar o cliente: usar apenas cabo original e carregador de até 5V=2.0A.",
+            warning: null,
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n🛵 Data que o motoboy buscou: [DATA]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_turbo_sem_correios: {
+            title: "Turbo · Sem itens · Correios",
+            steps: [
+              "O produto novo também será <strong>enviado sem caixa</strong>.",
+              "Explicar ao cliente que ele paga o valor do frete e geramos a etiqueta. Receber o Pix antes de gerar.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Enviar o código ao cliente (use o SAK abaixo).",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque → pegar produto novo (sem caixa) → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Enviar o novo item. Avisar ao cliente com rastreio. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong>."
+            ],
+            tip: "Lembrar o cliente: usar apenas cabo original e carregador de até 5V=2.0A.",
+            warning: null,
+            sak: [{ atalho: "/codigoreversocorreios180", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_estoque_180: {
+            title: "Processo interno — Estoque",
+            steps: [
+              "Receber o produto e analisar em até <strong>48 horas úteis</strong> — Responsável: <strong>estoquista</strong>.",
+              "🔍 <strong>Testar o produto recebido:</strong><br>• Verificar se o produto está <strong>carregando</strong> normalmente<br>• Testar <strong>todas as funções</strong> do produto<br>• Testar <strong>especificamente o defeito</strong> relatado pelo cliente",
+              "✅ <strong>Defeito confirmado:</strong> registrar nas atualizações do Monday qual era o defeito do produto.",
+              "Tirar o produto defeituoso do estoque com o <strong>número do pedido</strong>.",
+              "Pegar um novo produto no estoque e <strong>testá-lo antes de enviar</strong>: carregar, testar todas as funções e confirmar que está funcionando corretamente.",
+              "Retirar o novo produto do estoque com o <strong>número do pedido</strong>.",
+              "Avisar a vendedora que o produto está pronto para envio ou retirada pelo cliente."
+            ],
+            tip: "Se o estoque estiver tranquilo, analisar o mais rápido possível para satisfação do cliente.",
+            warning: "Nunca enviar o produto novo sem testá-lo antes — garantir que todas as funções estão OK."
+          },
+          r_com_motoboy: {
+            title: "Com itens originais · Motoboy",
+            steps: [
+              "Combinar com o cliente o horário para o motoboy buscar o produto (use o SAK abaixo).",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Após o produto chegar na loja, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque com nº do pedido → pegar produto novo → retirar do estoque com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Combinar com o cliente o horário para envio do novo item. Registrar no Monday quando foi enviado.",
+              "Alterar status da troca no Monday para <strong>FINALIZADO</strong> — Responsável: <strong>Gabriela</strong>."
+            ],
+            tip: null,
+            warning: null,
+            sak: [{ atalho: "/agendamotoboy180", mensagem: "Tudo certo! Para realizarmos a coleta, poderia me informar um horário disponível hoje ou amanhã para o nosso motoboy passar aí? Assim já deixamos tudo agendado! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n🛵 Data que o motoboy buscou: [DATA]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_com_retirada: {
+            title: "Com itens originais · Retirada na loja",
+            steps: [
+              "O cliente traz o item pessoalmente até a loja.",
+              "✅ Se o cliente trouxe pessoalmente e o estoque estiver tranquilo, <strong>é possível analisar na hora</strong>. Se veio via Uber, prazo de <strong>até 48h úteis</strong>.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Constatado defeito: tirar do estoque → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Avisar o cliente que pode retirar o produto novo. Registrar no Monday quando foi retirado.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong> — Responsável: <strong>Gabriela / Vendedora</strong>."
+            ],
+            tip: null,
+            warning: null,
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n🏪 Data que o cliente trouxe até a loja: [DATA]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data que o cliente buscou o produto novo: [DATA]"
+          },
+          r_com_correios: {
+            title: "Com itens originais · Correios / Transportadora",
+            steps: [
+              "Avisar ao cliente que vamos gerar um código reverso para ele levar até os Correios.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Copiar o código e enviar ao cliente com a data limite (use o SAK abaixo). ⚠️ Lembrar de pedir que envie: <strong>caixa, cabo e produto</strong>.",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque com nº do pedido → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Enviar o novo item no <strong>frete mais em conta</strong>. Avisar ao cliente com rastreio. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong> — Responsável: <strong>Gabriela / Vendedora</strong>."
+            ],
+            tip: null,
+            warning: null,
+            sak: [{ atalho: "/codigoreversocorreios180", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios.\n\n⚠️ Lembre-se de enviar junto: a <strong>caixa original</strong>, o <strong>cabo</strong> e o <strong>produto</strong>. Sem esses itens não conseguimos processar a troca. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_sem_motoboy: {
+            title: "Sem itens originais · Motoboy — exceção",
+            steps: [
+              "⚠️ Como o cliente não tem a caixa original, pelo regulamento ele <strong>perde a garantia</strong> — mas vamos abrir uma <strong>exceção</strong> para não deixá-lo no prejuízo (use o SAK abaixo).",
+              "O produto novo também será <strong>enviado sem caixa</strong>. O frete fica por conta do cliente. Se preferir enviar pelo motoboy, pode enviar da forma que desejar.",
+              "Combinar o horário para o motoboy buscar o produto.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Combinar com o cliente o horário para envio do novo item. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong> — Responsável: <strong>Gabriela / Vendedora</strong>."
+            ],
+            tip: null,
+            warning: "Sempre reforçar que é uma exceção — isso ajuda a argumentar sobre o frete e evita conflito.",
+            sak: [{ atalho: "/semcaixamotoboy180", mensagem: "Olá! Como você é nosso cliente e sempre prezamos pela melhor experiência com os nossos produtos, vamos realizar a troca mesmo sem a caixa original. Precisamos te informar que o produto novo também será enviado sem a embalagem original, e o envio do produto com defeito ficará por sua conta — você pode nos enviar da forma que preferir! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n🛵 Data que o motoboy buscou: [DATA]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          },
+          r_sem_retirada: {
+            title: "Sem itens originais · Retirada na loja — exceção",
+            steps: [
+              "⚠️ Como o cliente não tem a caixa original, pelo regulamento ele <strong>perde a garantia</strong> — mas vamos abrir uma <strong>exceção</strong> (use o SAK abaixo).",
+              "O produto novo também será <strong>enviado sem caixa</strong>.",
+              "O cliente traz o item pessoalmente até a loja.",
+              "✅ Se o cliente trouxe pessoalmente e o estoque estiver tranquilo, <strong>é possível analisar na hora</strong>. Se veio via Uber, prazo de <strong>até 48h úteis</strong>.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "Constatado defeito: tirar do estoque → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Avisar o cliente que pode retirar o produto novo. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong> — Responsável: <strong>Gabriela / Vendedora</strong>."
+            ],
+            tip: null,
+            warning: "Sempre reforçar que é uma exceção.",
+            sak: [{ atalho: "/semcaixamotoboy180", mensagem: "Olá! Como você é nosso cliente e sempre prezamos pela melhor experiência com os nossos produtos, vamos realizar a troca mesmo sem a caixa original. Precisamos te informar que o produto novo também será enviado sem a embalagem original, e o envio do produto com defeito ficará por sua conta — você pode nos enviar da forma que preferir! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n🏪 Data que o cliente trouxe até a loja: [DATA]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data que o cliente buscou o produto novo: [DATA]"
+          },
+          r_sem_correios: {
+            title: "Sem itens originais · Correios / Transportadora — exceção",
+            steps: [
+              "⚠️ Como o cliente não tem a caixa original, pelo regulamento ele <strong>perde a garantia</strong> — mas vamos abrir uma <strong>exceção</strong> (use o SAK abaixo).",
+              "O produto novo também será <strong>enviado sem caixa</strong>. O frete fica por conta do cliente — podemos gerar a etiqueta e o cliente paga via <strong>Pix</strong>.",
+              "Avisar que vamos gerar um código reverso para os Correios.",
+              "Abrir registro no <strong>Monday.com</strong> → quadro <em>Trocas e Devoluções</em> → grupo <em>Defeito - Garantia de 180 Dias</em>.<br>Nome: <code>Pedido [nº] - [Nome do Cliente]</code>.<br>Atualizações (copie o modelo abaixo e preencha):",
+              "⚠️ <strong>Somente a Bruna (Gerente) pode gerar o código reverso</strong>. Se ela não estiver, acionar <strong>Mariana ou Wender</strong>.<br>Antes de gerar: no card do Monday, trocar o status para <strong>GERAR CÓDIGO REVERSO</strong>, colocar a data e adicionar Bruna na tarefa.<br>No <strong>Bling</strong>: Vendas → Logística Reversa → Incluir Reversão → buscar pelo <strong>número do pedido do Bling</strong> (⚠️ número da Nuvemshop não funciona) → Avançar → Avançar → selecionar os itens → <strong>PAC REVERSO</strong> → Valor Declarado = valor do(s) item(s) → <em>não ativar</em> aviso de recebimento → confirmar → <strong>Finalizar</strong>.",
+              "Copiar o código e enviar ao cliente (use o SAK de código abaixo).",
+              "Após o produto chegar, a <strong>estoquista</strong> analisa em até <strong>48h úteis</strong>.",
+              "Constatado defeito: tirar do estoque → pegar produto novo → retirar com nº do pedido — Responsável: <strong>estoquista</strong>.",
+              "Enviar o novo item no frete mais em conta. Avisar ao cliente com rastreio. Registrar no Monday.",
+              "Alterar status no Monday para <strong>FINALIZADO</strong> — Responsável: <strong>Gabriela / Vendedora</strong>."
+            ],
+            tip: null,
+            warning: "Sempre reforçar que é uma exceção. Cobrar o frete do cliente via Pix antes de gerar a etiqueta.",
+            sak: [{ atalho: "/semcaixacorreios180", mensagem: "Olá! Como você é nosso cliente e não queremos que fique no prejuízo, vamos realizar a troca mesmo sem a caixa original — mas o produto novo também será enviado sem caixa. O frete ficará por sua conta. Podemos gerar a etiqueta para você e o pagamento pode ser feito via Pix para nós. Como você prefere? 😊" }, { atalho: "/codigoreversocorreios180", mensagem: "Olá! Aqui está o código para postagem nos Correios: [CÓDIGO]. Você tem até [DATA LIMITE] para levar o item em qualquer agência dos Correios.\n\n⚠️ Lembre-se de enviar junto: a <strong>caixa original</strong>, o <strong>cabo</strong> e o <strong>produto</strong>. Sem esses itens não conseguimos processar a troca. Qualquer dúvida é só chamar! 😊" }],
+            mondayCopy: "📦 Produto com defeito: [PRODUTO]\n🔧 Qual é o defeito: [DESCREVER]\n📮 Data que o código reverso foi gerado: [DATA]\n🔑 Código reverso: [CÓDIGO]\n📞 Data limite para contato com o cliente: [DATA]\n📬 Data de envio do produto novo: [DATA]"
+          }
+        }
+      },
+      {
+        id: "g180_estoque",
+        title: "Processo interno — Estoque",
+        sub: "Estoquista · Após produto chegar na loja",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`,
+        startQuestion: null,
+        questions: {},
+        results: {},
+        directSteps: {
+          steps: [
+            "Receber o produto e analisar em até <strong>48 horas úteis</strong> — Responsável: <strong>estoquista</strong>.",
+            "🔍 <strong>Testar o produto recebido:</strong><br>• Verificar se o produto está <strong>carregando</strong> normalmente<br>• Testar <strong>todas as funções</strong> do produto<br>• Testar <strong>especificamente o defeito</strong> relatado pelo cliente",
+            "✅ <strong>Defeito confirmado:</strong> registrar nas atualizações do Monday qual era o defeito do produto.",
+            "Tirar o produto defeituoso do estoque com o <strong>número do pedido</strong>.",
+            "Pegar um novo produto no estoque e <strong>testá-lo antes de enviar</strong>: carregar, testar todas as funções e confirmar que está funcionando corretamente.",
+            "Retirar o novo produto do estoque com o <strong>número do pedido</strong>.",
+            "Avisar a vendedora que o produto está pronto para ser enviado ou retirado pelo cliente."
+          ],
+          tip: "Se o estoque estiver tranquilo, analisar o mais rápido possível para satisfação do cliente.",
+          warning: "Nunca enviar o produto novo sem testá-lo antes — garantir que todas as funções estão OK."
+        }
+      }
+    ]
+  },
+
+
+  entrada: {
+    tag:"Estoque", title:"Entrada de mercadoria",
+    desc:"Recebimento, conferência e lançamento de mercadorias no sistema.",
+    processes:[
+      { title:"Recebimento de NF do fornecedor", sub:"Chegada de nova mercadoria",
+        steps:["Conferir a <strong>Nota Fiscal</strong> fisicamente: CNPJ destinatário, endereço, valor total e lista de itens.","Contar os volumes recebidos e comparar com a NF. Qualquer divergência, fotografar e registrar antes de assinar.","Abrir embalagens e conferir produto por produto: quantidade, SKU, cor e variação.","Lançar a entrada no <span class='bling'>Bling</span>: Estoque → Entrada de Produtos → informar número da NF.","Armazenar os produtos nas prateleiras corretas conforme localização cadastrada no Bling.","Arquivar a NF física na pasta 'Entradas' e comunicar <strong>Eshely</strong> para agendamento de pagamento."],
+        tip:"Se houver avaria ou falta de produto, não assinar o canhoto antes de registrar a ocorrência por escrito." }
+    ]
+  },
+  saida: {
+    tag:"Estoque", title:"Saída e separação de pedidos",
+    desc:"Processo de picking, embalagem e expedição de pedidos da loja.",
+    processes:[
+      { title:"Separação e despacho", sub:"Do picking ao envio",
+        steps:["Acessar no <span class='bling'>Bling</span> a fila de pedidos com status 'Em aberto' ou 'Aguardando envio'.","Imprimir ou visualizar a lista de picking e separar os produtos nas prateleiras.","Conferir o pedido item a item antes de embalar: <strong>SKU, quantidade e variação</strong> corretos.","Embalar com cuidado (papel seda, fita adesiva, caixa adequada). Incluir bilhete de agradecimento se disponível.","Gerar e imprimir a <strong>etiqueta de envio</strong> no Bling (Correios ou motoboy conforme o pedido).","Alterar o status do pedido no Bling para 'Em transporte' e registrar o código de rastreio.","Separar os pacotes por transportadora e acionar motoboy ou deixar pronto para coleta dos Correios."],
+        tip:"Nunca despachar sem registrar o rastreio no Bling — é a única evidência de envio em caso de disputa." }
+    ]
+  },
+  inventario: {
+    tag:"Controle", title:"Inventário e contagem de estoque",
+    desc:"Procedimento para contagem periódica e ajuste de divergências no estoque.",
+    processes:[
+      { title:"Contagem de estoque", sub:"Rotina mensal ou por demanda",
+        steps:["Exportar do <span class='bling'>Bling</span> o relatório de posição de estoque: Relatórios → Estoque → Posição de estoque.","Imprimir ou abrir a planilha com SKU, descrição e quantidade esperada.","<strong>estoquista</strong> conta fisicamente cada prateleira e anota a quantidade real ao lado da esperada.","Identificar divergências: itens a mais (entrada não registrada) ou a menos (saída não registrada).","Para cada divergência, investigar a causa antes de ajustar (pedido não lançado? NF esquecida?).","Fazer o <strong>ajuste de estoque</strong> no Bling: Estoque → Ajuste de Estoque → informar quantidade e motivo.","Documentar o resultado da contagem com data, responsável e arquivo salvo na pasta 'Inventários'."],
+        tip:"Nunca ajustar o estoque no Bling sem investigar e registrar a causa da divergência primeiro." }
+    ]
+  },
+  insumos: {
+    tag:"Controle", title:"Contagem de insumos",
+    desc:"Controle de embalagens, fitas, papel seda, caixas e materiais de expedição.",
+    processes:[
+      { title:"Controle semanal de insumos", sub:"Embalagens e materiais de expedição",
+        steps:["Manter planilha de controle com: item, quantidade mínima (ponto de pedido), quantidade atual e fornecedor.","Toda <strong>segunda-feira</strong>, estoquista faz a contagem física de todos os insumos.","Atualizar a planilha com os valores reais encontrados.","Quando qualquer item atingir ou ficar abaixo do <strong>ponto de pedido</strong>, alertar <strong>Eshely</strong> para compra imediata.","Ao receber novos insumos, registrar a entrada na planilha e armazenar em local fixo.","Organizar por tipo: caixas por tamanho, papel seda, fita, lacres e sacolas cada um no seu lugar."],
+        tip:"Nunca esperar o insumo acabar para comprar — o prazo de entrega pode atrasar pedidos de clientes." }
+    ]
+  },
+  avaria: {
+    tag:"Qualidade", title:"Avaria e descarte de produtos",
+    desc:"Procedimento para identificar, registrar e descartar produtos avariados.",
+    processes:[
+      { title:"Registro e descarte de avaria", sub:"Produto danificado ou inapropriado para venda",
+        steps:["Separar o produto avariado do estoque regular <strong>imediatamente</strong> — colocar em área de quarentena.","Fotografar o produto (frente, verso, embalagem) para documentação.","Preencher o registro de avaria: data, SKU, descrição, quantidade e causa provável.","Acionar <strong>Bruna</strong> para avaliação: produto pode ser recuperado, trocado com fornecedor ou descartado.","Se descarte: registrar baixa no <span class='bling'>Bling</span> → Estoque → Ajuste → motivo 'Avaria/Descarte'.","Arquivar o registro com foto no Drive para histórico e eventual acionamento de garantia do fornecedor."],
+        tip:"Guardar sempre as fotos das avarias — são essenciais para acionar o fornecedor em casos de garantia." }
+    ]
+  },
+  cancelamento: {
+    tag:"Pedidos", title:"Cancelamento de pedidos no Bling",
+    desc:"Como processar cancelamentos antes e depois do envio.",
+    processes:[
+      { title:"Cancelamento antes do envio", sub:"Pedido ainda no estoque",
+        steps:["Verificar no <span class='bling'>Bling</span> se o pedido está com status 'Em aberto' ou 'Aguardando envio'.","Abrir o pedido → clicar em <strong>Cancelar pedido</strong> → confirmar o motivo no campo indicado.","O estoque é estornado automaticamente pelo Bling. Confirmar que o saldo voltou ao item.","Acionar <strong>Eshely</strong> para iniciar o reembolso se o pagamento já foi confirmado.","Notificar o cliente via <strong>SAK</strong> com confirmação do cancelamento e prazo de reembolso.","Registrar o motivo do cancelamento nas observações do pedido no Bling."],
+        tip:null },
+      { title:"Cancelamento após envio", sub:"Produto já despachado",
+        steps:["Informar ao cliente que o pedido já foi despachado — o processo passa a ser uma <strong>devolução</strong>.","Orientar a recusar o recebimento na entrega OU devolver pelos Correios com etiqueta gerada pela loja.","Após retorno físico, <strong>estoquista</strong> dá entrada no estoque do Bling.","Processar o reembolso conforme o processo de devolução (ver seção Trocas e Devoluções).","Registrar no pedido o status 'Cancelado / Devolvido' com data e motivo."],
+        tip:"Não cancelar o pedido no Bling enquanto o produto estiver em trânsito — aguardar retorno físico." }
+    ]
+  },
+  reenvio: {
+    tag:"Logística", title:"Reenvio e devolução de pedidos",
+    desc:"Guia interativo: responda as perguntas e o sistema indica exatamente qual procedimento seguir.",
+    quiz: true,
+    flows: [
+      {
+        id: "reenvio",
+        title: "Reenvio de pedido",
+        sub: "Envio avulso · Correios & Total Express",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`,
+        startQuestion: "q_reenvio_dest",
+        questions: {
+          q_reenvio_dest: {
+            text: "O reenvio é para o mesmo endereço ou para um endereço diferente?",
+            options: [
+              { label: "Mesmo endereço", next: "r_reenvio_mesmo" },
+              { label: "Endereço diferente", next: "r_reenvio_novo" }
+            ]
+          }
+        },
+        results: {
+          r_reenvio_mesmo: {
+            title: "Reenvio — mesmo endereço",
+            steps: [
+              "Vá em <strong>Vendas</strong> no Bling → localize a nota fiscal do pedido a ser reenviado → abra a nota.",
+              "Apague os campos <strong>nesta ordem</strong>: <em>Serviço → Logística → Transporte</em>. Respeite a sequência e salve a nota.",
+              "Abra a nota novamente e preencha na ordem inversa: <em>Transporte → Logística → Serviço</em> com as novas informações.",
+              "Salve a nota fiscal após atualizar todos os dados.",
+              "Vá em <strong>Vendas → Objetos de Postagem</strong> → selecione a NF-e → clique em <strong>+ Gerar Remessa → Salvar e Enviar</strong>.",
+              "Vá em <strong>Notas Fiscais de Saída</strong> → clique em <strong>Imprimir DANFE Simplificada + Etiqueta de Transporte</strong>."
+            ],
+            tip: null,
+            warning: null
+          },
+          r_reenvio_novo: {
+            title: "Reenvio — endereço diferente",
+            steps: [
+              "Abra a nota fiscal original no Bling → clique nos <strong>3 pontinhos</strong> → selecione <strong>Clonar nota fiscal</strong>.",
+              "Na nota clonada, atualize o endereço do destinatário com os novos dados.",
+              "Preencha a logística correta para o novo endereço: <em>Transporte → Logística → Serviço</em>.",
+              "Salve a nota fiscal clonada.",
+              "Vá em <strong>Vendas → Objetos de Postagem</strong> → selecione a NF-e clonada → clique em <strong>+ Gerar Remessa → Salvar e Enviar</strong>.",
+              "Vá em <strong>Notas Fiscais de Saída</strong> → clique em <strong>Imprimir DANFE Simplificada + Etiqueta de Transporte</strong>."
+            ],
+            tip: null,
+            warning: "Para endereço diferente é obrigatório CLONAR a nota — nunca altere diretamente a nota original."
+          }
+        }
+      },
+      {
+        id: "devolucao",
+        title: "Devolução de pedido",
+        sub: "Cancelamento ou retorno com reembolso",
+        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>`,
+        startQuestion: "q_checkout",
+        questions: {
+          q_checkout: {
+            text: "O checkout já foi batido no Bling? (A NF-e já foi emitida e os itens conferidos?)",
+            options: [
+              { label: "Não — NF-e ainda NÃO foi emitida", next: "r_caso1" },
+              { label: "Sim — NF-e já foi emitida", next: "q_prazo" }
+            ]
+          },
+          q_prazo: {
+            text: "Há quanto tempo a NF-e foi emitida?",
+            options: [
+              { label: "Menos de 24 horas", next: "r_caso2" },
+              { label: "Mais de 24 horas", next: "r_caso3" }
+            ]
+          }
+        },
+        results: {
+          r_caso1: {
+            title: "Caso 1 — Pedido sem checkout batido",
+            subtitle: "NF-e ainda NÃO foi emitida",
+            steps: [
+              "Acesse a <strong>Nuvemshop</strong> → Vendas → <strong>Cancelar Venda</strong>.",
+              "Selecione o <strong>motivo correto</strong> do cancelamento.",
+              "Marque TODAS as opções: ✓ Enviar e-mail ao cliente · ✓ Restaurar estoque · ✓ Estornar pagamento.",
+              "Clique em <strong>Cancelar Venda</strong>. O estoque é restaurado e o pagamento estornado automaticamente."
+            ],
+            tip: null,
+            warning: "Ao cancelar com estorno, o valor é totalmente estornado. Esta ação NÃO pode ser desfeita."
+          },
+          r_caso2: {
+            title: "Caso 2 — Checkout batido, menos de 24h",
+            subtitle: "NF-e emitida há menos de 24 horas",
+            steps: [
+              "Acesse a <strong>Nuvemshop</strong> → Vendas → <strong>Cancelar Venda</strong> → selecione o motivo.",
+              "Marque TODAS as opções: ✓ Enviar e-mail ao cliente · ✓ Restaurar estoque · ✓ Estornar pagamento → <strong>Cancelar Venda</strong>.",
+              "No Bling, vá em <strong>Notas Fiscais de Saída</strong> → clique nos 3 pontinhos da NF-e → <strong>Cancelar NF-e</strong>.",
+              "Digite o motivo do cancelamento e confirme clicando em <strong>Cancelar</strong>."
+            ],
+            tip: "O cancelamento da NF-e só funciona dentro das primeiras 24h. Se o prazo passou, use o Caso 3.",
+            warning: null
+          },
+          r_caso3: {
+            title: "Caso 3 — Checkout batido, mais de 24h",
+            subtitle: "NF-e não pode mais ser cancelada — emitir NF-e de Devolução",
+            steps: [
+              "Acesse a <strong>Nuvemshop</strong> → Vendas → <strong>Cancelar Venda</strong> → selecione o motivo.",
+              "Marque TODAS as opções: ✓ Enviar e-mail ao cliente · ✓ Restaurar estoque · ✓ Estornar pagamento → <strong>Cancelar Venda</strong>.",
+              "No Bling, vá em <strong>Notas Fiscais de Saída</strong> → clique nos 3 pontinhos → <strong>Gerar Devolução</strong>.",
+              "Selecione <strong>SOMENTE os itens</strong> que voltarão ao estoque → <strong>Continuar → Emitir NF</strong>.",
+              "Pronto — os itens foram devolvidos ao estoque pela nova nota fiscal de devolução."
+            ],
+            tip: "Na seleção de itens da devolução, marque APENAS os que voltarão ao estoque. Itens danificados ou perdidos NÃO devem ser incluídos.",
+            warning: null
+          }
+        }
+      }
+    ]
+  },
+  etiqueta: {
+    tag:"Logística", title:"Cancelamento de etiqueta",
+    desc:"Quando e como cancelar uma etiqueta de envio gerada no Bling.",
+    processes:[
+      { title:"Cancelar etiqueta dos Correios", sub:"Etiqueta gerada mas não postada",
+        steps:["Acessar o <span class='bling'>Bling</span> → Expedição → Etiquetas.","Localizar a etiqueta pelo número do pedido ou código de rastreio.","Clicar em <strong>Cancelar etiqueta</strong>. O sistema envia a solicitação automaticamente aos Correios.","Aguardar confirmação de cancelamento (pode levar até 24h). O crédito retorna automaticamente.","Se necessário, gerar nova etiqueta após corrigir os dados do pedido.","Anotar o cancelamento no campo de observações do pedido no Bling."],
+        tip:"Etiquetas postadas não podem ser canceladas. Só cancele se o objeto ainda não foi entregue nos Correios." }
+    ]
+  }
+};
+
+let cur = 'trocas';
+// quiz state: { flowId, step: 'question'|'result', questionId|resultId, history:[{qId,optLabel}] }
+const quizState = {};
+
+function toggleMobMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('mobOverlay');
+  sidebar.classList.toggle('mob-open');
+  overlay.classList.toggle('open');
+}
+
+function go(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  cur = el.dataset.s;
+  // Limpar estado do quiz ao trocar de seção
+  Object.keys(quizState).forEach(k => { quizState[k] = { step: 'start', current: null, history: [] }; });
+  render(cur, '');
+  // fechar menu mobile
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('mobOverlay');
+  sidebar.classList.remove('mob-open');
+  overlay.classList.remove('open');
+}
+
+/* ── QUIZ HELPERS ─── */
+function findFlow(flowId) {
+  // busca o flow na seção atualmente ativa
+  const s = D[cur];
+  if (s && s.flows) return s.flows.find(f => f.id === flowId) || null;
+  return null;
+}
+
+function quizStart(flowId) {
+  const flow = findFlow(flowId);
+  if (!flow) return;
+  quizState[flowId] = { step: 'question', current: flow.startQuestion, history: [] };
+  renderQuizSection(cur);
+}
+
+function quizBack(flowId) {
+  const flow = findFlow(flowId);
+  if (!flow || !quizState[flowId]) return;
+  const qs = quizState[flowId];
+  if (qs.history && qs.history.length > 0) {
+    // Se estava num resultado, apenas volta para a última pergunta sem remover do histórico
+    if (qs.step === 'result') {
+      const prev = qs.history[qs.history.length - 1];
+      qs.step = 'question';
+      qs.current = prev.qId;
+    } else {
+      // Estava numa pergunta: remove a última entrada e vai para a anterior
+      qs.history.pop();
+      if (qs.history.length === 0) {
+        qs.step = 'question';
+        qs.current = flow.startQuestion;
+      } else {
+        const prev = qs.history[qs.history.length - 1];
+        qs.step = 'question';
+        qs.current = prev.qId;
+      }
+    }
+  } else {
+    qs.step = 'start';
+    qs.current = null;
+  }
+  renderQuizSection(cur);
+}
+
+function quizReset(flowId) {
+  quizState[flowId] = { step: 'start', current: null, history: [] };
+  renderQuizSection(cur);
+}
+
+function directOpen(flowId) {
+  quizState[flowId] = { step: 'open' };
+  renderQuizSection(cur);
+}
+
+function directClose(flowId) {
+  quizState[flowId] = { step: 'start' };
+  renderQuizSection(cur);
+}
+
+function answerQuestion(flowId, optLabel, nextId) {
+  if (!quizState[flowId]) quizState[flowId] = { step: 'start', history: [] };
+  const qs = quizState[flowId];
+  qs.history = qs.history || [];
+  qs.history.push({ qId: qs.current, optLabel });
+  const flow = findFlow(flowId);
+  if (!flow) return;
+  if (flow.questions[nextId]) {
+    qs.step = 'question';
+    qs.current = nextId;
+  } else {
+    qs.step = 'result';
+    qs.current = nextId;
+  }
+  renderQuizSection(cur);
+}
+
+function copiarSAK(msg, btn) {
+  const orig = btn.innerHTML;
+  const ok = () => {
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><polyline points="20 6 9 17 4 12"/></svg> Copiado!`;
+    btn.style.background = '#2A9D2A';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2200);
+  };
+  // Tenta clipboard API primeiro
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(msg).then(ok).catch(() => fallback(msg, ok));
+  } else {
+    fallback(msg, ok);
+  }
+}
+
+function fallback(msg, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = msg;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) { alert('Não foi possível copiar automaticamente. Selecione o texto manualmente.'); }
+  document.body.removeChild(ta);
+}
+
+function toggleSubOpt(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function renderQuizSection(key) {
+  key = key || cur;
+  const s = D[key];
+  const icon = IC.icons[key] || IC.icons.reenvio;
+  const alertIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  const infoIcon  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="15" height="15"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  const checkIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const backIcon  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>`;
+  const playIcon  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="15" height="15"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+  let h = `<div class="content-header">
+    <div class="cat-tag">${s.tag}</div>
+    <h1>${s.title}</h1>
+    <p>${s.desc}</p>
+  </div>
+  <div class="process-list">`;
+
+  s.flows.forEach(flow => {
+    const qs = quizState[flow.id] || { step: 'start' };
+    const flowIcon = flow.icon || icon;
+
+    h += `<div class="quiz-card">
+      <div class="quiz-card-header">
+        <div class="proc-icon">${flowIcon}</div>
+        <div class="proc-info">
+          <div class="proc-title">${flow.title}</div>
+          <div class="proc-sub">${flow.sub}</div>
+        </div>
+      </div>
+      <div class="quiz-body">`;
+
+    if (flow.directSteps) {
+      // --- FLOW COM STEPS DIRETOS (sem perguntas) ---
+      const ds = flow.directSteps;
+      const dsOpen = qs.step === 'open';
+      if (!dsOpen) {
+        h += `<div class="quiz-question">Clique para ver o passo a passo.</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="directOpen('${flow.id}')">
+              <div class="quiz-opt-dot"></div>
+              Ver passo a passo ${playIcon}
+            </button>
+          </div>`;
+      } else {
+        h += `<div class="quiz-result">
+          <div class="quiz-result-title">${checkIcon} ${flow.title}</div>
+          <ul>`;
+        ds.steps.forEach((st, i) => {
+          h += `<li><div class="step-num">${i+1}</div><div class="step-text">${st}</div></li>`;
+        });
+        h += `</ul>`;
+        if (ds.tip)     h += `<div class="quiz-info-box">${infoIcon}<span><strong>Atenção:</strong> ${ds.tip}</span></div>`;
+        if (ds.warning) h += `<div class="quiz-warning">${alertIcon}<span><strong>⚠ Atenção:</strong> ${ds.warning}</span></div>`;
+        h += `</div><button class="quiz-back" onclick="directClose('${flow.id}')">${backIcon} Fechar</button>`;
+      }
+
+    } else if (qs.step === 'start' || !qs.current) {
+      // --- QUIZ: tela inicial ---
+      h += `<div class="quiz-question">Clique para iniciar o guia passo a passo.</div>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizStart('${flow.id}')">
+            <div class="quiz-opt-dot"></div>
+            Iniciar guia ${playIcon}
+          </button>
+        </div>`;
+
+    } else if (qs.step === 'question') {
+      const q = flow.questions[qs.current];
+      // breadcrumb
+      if (qs.history && qs.history.length > 0) {
+        h += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">`;
+        qs.history.forEach(h2 => {
+          h += `<span style="font-size:11px;font-weight:700;background:var(--roxo-suave);color:var(--roxo);padding:3px 10px;border-radius:20px;">${h2.optLabel}</span>`;
+        });
+        h += `</div>`;
+      }
+      h += `<div class="quiz-question">${q.text}</div>`;
+      // SAK cards na pergunta (antes das opções)
+      const sakList = q.sak || q.sakAntes || [];
+      if (sakList.length) {
+        const copyIcon2 = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+        h += `<div class="sak-block"><div class="sak-label">💬 ${q.sakAntes ? 'Envie antes de continuar' : 'Resposta rápida SAK — use antes de confirmar'}</div>`;
+        sakList.forEach(s => {
+          const safeMsg = s.mensagem.replace(/`/g,'\\`').replace(/\$/g,'\\$').replace(/\n/g,'\\n');
+          h += `<div class="sak-card">
+            <div class="sak-atalho">
+              <span class="sak-atalho-tag">${s.atalho}</span>
+              <button class="sak-copy-btn" onclick="copiarSAK(\`${safeMsg}\`, this)">${copyIcon2} Copiar mensagem</button>
+            </div>
+            <div class="sak-msg">${s.mensagem}</div>
+          </div>`;
+        });
+        h += `</div>`;
+      }
+      h += `<div class="quiz-options" style="margin-top:12px">`;
+      q.options.forEach(opt => {
+        h += `<button class="quiz-opt" onclick="answerQuestion('${flow.id}','${opt.label.replace(/'/g,"\\'")}','${opt.next}')">
+          <div class="quiz-opt-dot"></div>
+          ${opt.label}
+        </button>`;
+      });
+      h += `</div>`;
+      // Voltar sempre visível: histórico > 0 volta pergunta anterior, senão volta ao início
+      if (qs.history && qs.history.length > 0) {
+        h += `<button class="quiz-back" onclick="quizBack('${flow.id}')">${backIcon} Voltar</button>`;
+      } else {
+        h += `<button class="quiz-back" onclick="quizReset('${flow.id}')">${backIcon} Voltar ao início</button>`;
+      }
+
+    } else if (qs.step === 'result') {
+      const r = flow.results[qs.current];
+      // breadcrumb
+      if (qs.history && qs.history.length > 0) {
+        h += `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">`;
+        qs.history.forEach(hh => {
+          h += `<span style="font-size:11px;font-weight:700;background:var(--roxo-suave);color:var(--roxo);padding:3px 10px;border-radius:20px;">${hh.optLabel}</span>`;
+        });
+        h += `</div>`;
+      }
+      const copyIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="12" height="12"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+      const chevDown = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+      h += `<div class="quiz-result">
+        <div class="quiz-result-title">${checkIcon} ${r.title}${r.subtitle ? ' <span style="font-weight:500;color:var(--txt-sec);font-size:12px;">— '+r.subtitle+'</span>' : ''}</div>
+        <ul>`;
+      r.steps.forEach((st, i) => {
+        h += `<li><div class="step-num">${i+1}</div><div class="step-text">${st}</div></li>`;
+      });
+      h += `</ul>`;
+      // SAK cards no resultado
+      if (r.sak && r.sak.length) {
+        h += `<div class="sak-block"><div class="sak-label">💬 Respostas rápidas SAK</div>`;
+        r.sak.forEach(s => {
+          const safeMsg = s.mensagem.replace(/`/g,'\\`').replace(/\$/g,'\\$').replace(/\n/g,'\\n');
+          h += `<div class="sak-card">
+            <div class="sak-atalho">
+              <span class="sak-atalho-tag">${s.atalho}</span>
+              <button class="sak-copy-btn" onclick="copiarSAK(\`${safeMsg}\`, this)">${copyIcon} Copiar mensagem</button>
+            </div>
+            <div class="sak-msg">${s.mensagem}</div>
+          </div>`;
+        });
+        h += `</div>`;
+      }
+      if (r.tip)     h += `<div class="quiz-info-box">${infoIcon}<span><strong>Atenção:</strong> ${r.tip}</span></div>`;
+      if (r.warning) h += `<div class="quiz-warning">${alertIcon}<span><strong>⚠ Atenção:</strong> ${r.warning}</span></div>`;
+      // Monday copy block
+      if (r.mondayCopy) {
+        const safeCopy = r.mondayCopy.replace(/`/g,'\\`').replace(/\$/g,'\\$').replace(/\n/g,'\\n');
+        h += `<div class="sak-block" style="margin-top:14px">
+          <div class="sak-label">📋 Modelo para Monday.com — copie e preencha</div>
+          <div class="sak-card">
+            <div class="sak-atalho">
+              <span class="sak-atalho-tag" style="font-family:inherit;letter-spacing:0">Atualizações do card</span>
+              <button class="sak-copy-btn" onclick="copiarSAK(\`${safeCopy}\`, this)">${copyIcon} Copiar modelo</button>
+            </div>
+            <div class="sak-msg" style="white-space:pre-line">${r.mondayCopy}</div>
+          </div>
+        </div>`;
+      }
+      // subOptions (reembolso vs cupom)
+      if (r.subOptions && r.subOptions.length) {
+        h += `<div class="sub-options">`;
+        r.subOptions.forEach((so, si) => {
+          h += `<div class="sub-opt-block" id="subopt_${flow.id}_${qs.current}_${si}">
+            <div class="sub-opt-header" onclick="toggleSubOpt('subopt_${flow.id}_${qs.current}_${si}')">
+              <span>${so.label}</span>${chevDown}
+            </div>
+            <div class="sub-opt-body"><ul>`;
+          so.steps.forEach((st, i) => {
+            h += `<li><div class="step-num">${i+1}</div><div class="step-text">${st}</div></li>`;
+          });
+          h += `</ul>`;
+          if (so.warning) h += `<div class="quiz-warning" style="margin-top:10px">${alertIcon}<span><strong>⚠ Atenção:</strong> ${so.warning}</span></div>`;
+          h += `</div></div>`;
+        });
+        h += `</div>`;
+      }
+      h += `</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+          <button class="quiz-back" onclick="quizBack('${flow.id}')">${backIcon} Voltar</button>
+          <button class="quiz-back" onclick="quizReset('${flow.id}')" style="margin-left:auto;">${backIcon} Começar novamente</button>
+        </div>`;
+    }
+
+    h += `</div></div>`;
+  });
+
+  h += `</div>
+  <button class="add-btn" style="margin-top:14px;border-color:var(--magenta);color:var(--magenta)" onclick="requestIAModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    ✨ Criar novo processo com IA
+  </button>`;
+  document.getElementById('mainContent').innerHTML = h;
+}
+
+function toggleCard(card) { card.classList.toggle('open'); }
+
+function render(key, filter) {
+  if (D[key] && D[key].quiz) { renderQuizSection(key); return; }
+  const s = D[key];
+  const icon = IC.icons[key];
+  const filt = filter.toLowerCase();
+  const procs = s.processes.filter(p =>
+    !filt || p.title.toLowerCase().includes(filt)
+           || p.sub.toLowerCase().includes(filt)
+           || p.steps.join(' ').toLowerCase().includes(filt)
+  );
+
+  let h = `<div class="content-header">
+    <div class="cat-tag">${s.tag}</div>
+    <h1>${s.title}</h1>
+    <p>${s.desc}</p>
+  </div>
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Buscar processo..." id="si" oninput="render('${key}',this.value)" value="${filter.replace(/"/g,'&quot;')}">
+  </div>
+  <div class="process-list">`;
+
+  if (!procs.length) {
+    h += `<div class="empty">Nenhum processo encontrado.</div>`;
+  } else {
+    procs.forEach(p => {
+      const origIdx = s.processes.indexOf(p);
+      const steps = p.steps.map((st,i) =>
+        `<li class="step"><div class="step-num">${i+1}</div><div class="step-text">${st}</div></li>`
+      ).join('');
+      const tipHtml = p.tip
+        ? `<div class="tip-box">${IC.alert}<span><strong>Atenção:</strong> ${p.tip}</span></div>` : '';
+      h += `<div class="process-card" onclick="toggleCard(this)">
+        <div class="process-header">
+          <div class="proc-icon">${icon}</div>
+          <div class="proc-info">
+            <div class="proc-title">${p.title}</div>
+            <div class="proc-sub">${p.sub}</div>
+          </div>
+          <button class="edit-btn" onclick="event.stopPropagation(); requestEdit(${origIdx})" title="Editar processo">${IC.edit}</button>
+          ${IC.chev}
+        </div>
+        <div class="process-body">
+          <div class="proc-meta">${IC.clock}<span>Siga o passo a passo na ordem</span></div>
+          <ul class="steps">${steps}</ul>
+          ${tipHtml}
+        </div>
+      </div>`;
+    });
+  }
+
+  h += `</div>
+  <button class="add-btn" onclick="requestAdd()">${IC.plus} Adicionar novo processo nesta categoria</button>`;
+  if (!isAdmin) {
+    h += `<div class="auth-hint">${IC.lock} Faça login para editar ou adicionar processos.</div>`;
+  }
+  document.getElementById('mainContent').innerHTML = h;
+}
+
+/* ── AUTENTICAÇÃO ────────────────────────────── */
+function updateAuthUI() {
+  const el = document.getElementById('authArea');
+  if (isAdmin) {
+    el.innerHTML = `<div class="admin-badge">${IC.userok} Mari & Wender <button onclick="logout()" title="Sair">${IC.logout}</button></div>`;
+  } else {
+    el.innerHTML = `<button class="login-btn" onclick="openLoginModal()">${IC.lock} Entrar</button>`;
+  }
+}
+
+function openLoginModal() {
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginPass').style.borderColor = '';
+  document.getElementById('loginOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('loginPass').focus(), 60);
+}
+
+function closeLoginModal() {
+  document.getElementById('loginOverlay').classList.remove('open');
+  pendingAction = null;
+}
+
+function submitLogin() {
+  const val = document.getElementById('loginPass').value;
+  if (val === ADMIN_PASSWORD) {
+    isAdmin = true;
+    localStorage.setItem('anjosAdminLogged', 'true');
+    updateAuthUI();
+    document.getElementById('loginOverlay').classList.remove('open');
+    const action = pendingAction;
+    pendingAction = null;
+    render(cur, document.getElementById('si') ? document.getElementById('si').value : '');
+    if (action) action();
+  } else {
+    document.getElementById('loginError').style.display = 'flex';
+    const el = document.getElementById('loginPass');
+    el.style.borderColor = '#C03030';
+    el.focus();
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  localStorage.removeItem('anjosAdminLogged');
+  updateAuthUI();
+  render(cur, document.getElementById('si') ? document.getElementById('si').value : '');
+}
+
+function requestAdd() {
+  if (!isAdmin) { pendingAction = () => openModal(null); openLoginModal(); return; }
+  openModal(null);
+}
+
+function requestEdit(idx) {
+  if (!isAdmin) { pendingAction = () => openModal(idx); openLoginModal(); return; }
+  openModal(idx);
+}
+
+function overlayClick(e, overlayId, closeFn) {
+  if (e.target === document.getElementById(overlayId)) closeFn();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeLoginModal(); closeIAModal(); }
+  if (e.key === 'Enter' && document.getElementById('loginOverlay').classList.contains('open')) submitLogin();
+});
+
+function requestIAModal() {
+  if (!isAdmin) { pendingAction = () => openIAModal(); openLoginModal(); return; }
+  openIAModal();
+}
+
+/* ── MODAL IA ─── */
+function openIAModal() {
+  document.getElementById('iaInput').value = '';
+  document.getElementById('iaResult').classList.remove('visible');
+  document.getElementById('iaResult').textContent = '';
+  document.getElementById('iaCopyBtn').style.display = 'none';
+  document.getElementById('iaRetryBtn').style.display = 'none';
+  document.getElementById('iaSpinner').classList.remove('visible');
+  document.getElementById('iaModalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('iaInput').focus(), 60);
+}
+function closeIAModal() {
+  document.getElementById('iaModalOverlay').classList.remove('open');
+}
+function copiarResultadoIA() {
+  const text = document.getElementById('iaResult').textContent;
+  fallback(text, () => { toast('Resultado copiado!'); });
+}
+async function gerarProcessoIA() {
+  const input = document.getElementById('iaInput').value.trim();
+  if (!input) { const el = document.getElementById('iaInput'); el.style.borderColor = 'var(--magenta)'; setTimeout(() => el.style.borderColor = '', 1500); return; }
+  document.getElementById('iaGenBtn').disabled = true;
+  document.getElementById('iaSpinner').classList.add('visible');
+  document.getElementById('iaResult').classList.remove('visible');
+  document.getElementById('iaCopyBtn').style.display = 'none';
+  document.getElementById('iaRetryBtn').style.display = 'none';
+  const systemPrompt = `Você é um especialista em processos operacionais para e-commerce. Sua função é receber a descrição de um processo em linguagem natural e estruturá-lo de forma clara e objetiva para uma Central de Processos interna.\n\nRegras:\n- Se o processo tem bifurcações (se X então Y, senão Z), estruture como QUIZ com perguntas e caminhos.\n- Se é linear, estruture como PASSOS NUMERADOS.\n- Seja direto e prático. Português brasileiro.\n- Use negrito para destacar sistemas (Bling, Monday, SAK), responsáveis e ações críticas.\n- Indique responsáveis no final de cada passo quando mencionado.\n- Se identificar mensagens rápidas (SAK), sugira o atalho e o texto.\n- Formate de forma que a equipe possa seguir sem dúvidas.`;
+  const TARGET = 'https://api.anthropic.com/v1/messages';
+  try {
+    const resp = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(TARGET), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': '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',
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6', max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Estruture o seguinte processo operacional:\n\n${input}` }]
+      })
+    });
+    const data = await resp.json();
+    const text = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+    document.getElementById('iaResult').textContent = text || 'Não foi possível gerar. Tente novamente.';
+    document.getElementById('iaResult').classList.add('visible');
+    document.getElementById('iaCopyBtn').style.display = '';
+    document.getElementById('iaRetryBtn').style.display = '';
+  } catch(e) {
+    document.getElementById('iaResult').textContent = 'Erro ao conectar com a IA. Verifique sua conexão e tente novamente.';
+    document.getElementById('iaResult').classList.add('visible');
+    document.getElementById('iaRetryBtn').style.display = '';
+  } finally {
+    document.getElementById('iaGenBtn').disabled = false;
+    document.getElementById('iaSpinner').classList.remove('visible');
+  }
+}
+
+/* ── MODAL PROCESSO (add/editar) ─────────────── */
+function openModal(idx) {
+  currentEditIndex = (idx === null || idx === undefined) ? null : idx;
+  const s = D[cur];
+  const editing = currentEditIndex !== null;
+  const p = editing ? s.processes[currentEditIndex] : null;
+
+  document.getElementById('mEyebrow').textContent = s.tag + ' · ' + s.title;
+  document.getElementById('mTitle').textContent = editing ? 'Editar processo' : 'Novo processo em ' + s.title;
+  document.getElementById('pTitle').value = p ? p.title : '';
+  document.getElementById('pSub').value = p ? p.sub : '';
+  document.getElementById('pTip').value = (p && p.tip) ? p.tip : '';
+
+  const b = document.getElementById('stepsBuilder');
+  b.innerHTML = '';
+  if (p && p.steps.length) {
+    p.steps.forEach(st => addStep(st));
+  } else {
+    addStep(); addStep(); addStep();
+  }
+
+  document.getElementById('deleteProcessBtn').style.display = editing ? 'flex' : 'none';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('pTitle').focus();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  currentEditIndex = null;
+}
+
+function addStep(value) {
+  const b = document.getElementById('stepsBuilder');
+  const n = b.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'step-row';
+  row.innerHTML = `
+    <div class="step-row-num">${n}</div>
+    <input class="form-input" type="text" placeholder="Descreva o passo ${n}...">
+    <button class="step-del" onclick="removeStep(this)" title="Remover">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>`;
+  b.appendChild(row);
+  if (value) row.querySelector('input').value = value;
+  renumber();
+  if (!value) row.querySelector('input').focus();
+}
+
+function removeStep(btn) {
+  const b = document.getElementById('stepsBuilder');
+  if (b.children.length <= 1) return;
+  btn.closest('.step-row').remove();
+  renumber();
+}
+
+function renumber() {
+  document.querySelectorAll('#stepsBuilder .step-row').forEach((r, i) => {
+    r.querySelector('.step-row-num').textContent = i + 1;
+    r.querySelector('input').placeholder = 'Descreva o passo ' + (i+1) + '...';
+  });
+}
+
+function saveProcess() {
+  const title = document.getElementById('pTitle').value.trim();
+  if (!title) {
+    const el = document.getElementById('pTitle');
+    el.style.borderColor = '#E12B8D'; el.focus();
+    setTimeout(() => el.style.borderColor = '', 1500);
+    return;
+  }
+  const steps = Array.from(document.querySelectorAll('#stepsBuilder .step-row input'))
+    .map(i => i.value.trim()).filter(Boolean);
+  if (!steps.length) { toast('Adicione pelo menos um passo.', true); return; }
+
+  const editing = currentEditIndex !== null;
+  const newObj = {
+    title,
+    sub: document.getElementById('pSub').value.trim() || 'Processo interno',
+    tip: document.getElementById('pTip').value.trim() || null,
+    steps
+  };
+
+  if (editing) {
+    D[cur].processes[currentEditIndex] = newObj;
+  } else {
+    D[cur].processes.push(newObj);
+  }
+
+  closeModal();
+  render(cur, '');
+  toast(editing ? 'Processo atualizado!' : 'Processo "' + title + '" adicionado!');
+}
+
+function deleteProcess() {
+  if (currentEditIndex === null) return;
+  if (!confirm('Tem certeza que deseja excluir este processo? Essa ação não pode ser desfeita.')) return;
+  D[cur].processes.splice(currentEditIndex, 1);
+  closeModal();
+  render(cur, '');
+  toast('Processo excluído.');
+}
+
+function toast(msg, err) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast ' + (err ? 'err' : 'ok');
+  t.innerHTML = (err ? IC.xcircle : IC.check) + '<span>' + msg + '</span>';
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.cssText = 'opacity:0;transition:opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+
+document.getElementById('topDate').textContent =
+  'Atualizado em ' + new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+
+updateAuthUI();
+render('trocas', '');
+</script>
+</body>
+</html>
